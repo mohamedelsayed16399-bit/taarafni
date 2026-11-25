@@ -368,6 +368,10 @@ function applyDk(){document.body.classList.toggle("dk",DK);var b=document.getEle
 function toggleDk(){DK=!DK;try{localStorage.setItem("tf_dk",DK?"1":"0")}catch(e){}applyDk()}
 function toggleSnd(){SND=!SND;try{localStorage.setItem("tf_snd",SND?"1":"0")}catch(e){}var b=document.getElementById("snd");if(b)b.textContent=SND?"🔊":"🔇";toast(SND?"الصوت شغال":"الصوت مقفول")}
 function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1800)}
+function dkey(o){var t=new Date(Date.now()-(o||0)*864e5);return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()}
+function streakNow(){var d=load(),st=d.st||{};if(st.l===dkey(0)||st.l===dkey(1))return st.n||0;return 0}
+function streakTouch(){var d=load(),st=d.st||{n:0};if(st.l===dkey(0))return;st.n=(st.l===dkey(1)?(st.n||0):0)+1;st.l=dkey(0);d.st=st;save(d)}
+function streakBadge(){var n=streakNow(),d=load(),done=d.st&&d.st.l===dkey(0);if(!n)return'<div class="card" style="text-align:center"><b>🔥 ابدأ سلسلتك النهاردة</b><p style="margin:6px 0 0">اعمل اختبار كل يوم وسلسلتك تكبر</p></div>';return'<div class="card" style="text-align:center"><b style="font-size:20px">🔥 '+n+(n>2?' أيام ورا بعض':' يوم')+'</b><p style="margin:6px 0 0">'+(done?'كده عملت اختبار النهاردة ✅ ارجع بكرة عشان متكسرش السلسلة':'اعمل اختبار النهاردة عشان السلسلة متتكسرش!')+'</p></div>'}
 function load(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function save(d){try{localStorage.setItem(LS,JSON.stringify(d))}catch(e){}}
 function base(){return location.origin+location.pathname}
@@ -404,7 +408,7 @@ function home(){
   var d=load(),mine=d.mine||[],h="";
   document.title="تعرفني قد إيه؟ | اختبر أصحابك";
   $("#tag").textContent="اعمل اختبارك وشوف مين فعلاً يعرفك";
-  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:16px"><input type="checkbox" id="dy" style="width:20px;height:20px"> 📅 اختبار النهارده (نفس الأسئلة لكل الناس)</label><p style="margin:14px 0 4px;font-weight:700">عدد الأسئلة</p><div class="opts" id="ln" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
+  h+=streakBadge();h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:16px"><input type="checkbox" id="dy" style="width:20px;height:20px"> 📅 اختبار النهارده (نفس الأسئلة لكل الناس)</label><p style="margin:14px 0 4px;font-weight:700">عدد الأسئلة</p><div class="opts" id="ln" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
   if(d.att&&d.att.length){
     h+='<div class="card"><h2>🎮 جاوبت على</h2>';
     var tot=d.att.length,avgA=Math.round(d.att.reduce(function(m,a){return m+a.s/a.o},0)/tot*100);h+='<p class="small" style="margin:0 0 8px">📊 لعبت '+tot+' اختبار، متوسطك '+avgA+'%</p>';
@@ -423,7 +427,7 @@ function home(){
     h+='</div>';
   }
   app.innerHTML=h;
-  $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);DAILY=$("#dy").checked;build(n)};
+  $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);streakTouch();DAILY=$("#dy").checked;build(n)};
   PACKS.forEach(function(p,i){var b=document.createElement("button");b.className="opt"+(i===PK?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[0];b.onclick=function(){PK=i;[].forEach.call($("#pk").children,function(x,k){x.classList.toggle("sel",k===i)})};$("#pk").appendChild(b)});
   [[5,"سريع ⚡ 5"],[10,"10 أسئلة"],[15,"طويل 🐢 15"],[20,"ماراثون 🏃 20"]].forEach(function(p){var b=document.createElement("button");b.className="opt"+(p[0]===N?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[1];b.onclick=function(){N=p[0];[].forEach.call($("#ln").children,function(x){x.classList.toggle("sel",x===b)})};$("#ln").appendChild(b)});
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
