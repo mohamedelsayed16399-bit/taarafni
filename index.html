@@ -569,6 +569,7 @@ function play(Q){
     h+='<button class="btn alt" id="img">شارك النتيجة كصورة 🖼️</button><button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button><button class="btn alt" id="again">جرب تاني 🔁</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
     Q.qs.forEach(function(q,k){h+='<div class="rev"><b>'+esc(q.t)+'</b>'+(ans[k]===q.a?'✅ ':'❌ ')+esc(q.o[q.a])+(ans[k]===q.a?'':' <span style="color:#9a8bbd">('+(ans[k]<0?'الوقت خلص':'إنت اخترت: '+esc(q.o[ans[k]]))+')</span>')+'</div>'});
     app.innerHTML=h+'</div>';
+    (function(){var e=app.querySelector('.big');if(!e)return;var tot=Q.qs.length,i=0;if(!sc){return}e.textContent='0 / '+tot;var iv=setInterval(function(){i++;e.textContent=i+' / '+tot;e.style.transform='scale('+(i<sc?1.12:1)+')';e.style.transition='transform .15s';if(i>=sc){clearInterval(iv);e.textContent=sc+' / '+tot;try{if(navigator.vibrate)navigator.vibrate(sc/tot>=.8?[40,30,40]:30)}catch(x){}}},Math.max(60,Math.min(140,900/sc)))})();
     var mask=Q.qs.map(function(q,k){return ans[k]===q.a?"1":"0"}).join("");var rl=base()+"#r="+qk+"~"+encodeURIComponent(who)+"~"+sc+"~"+Q.qs.length+"~"+mask;
     var msg="جبت "+sc+" من "+Q.qs.length+" في اختبار «تعرفني قد إيه» بتاعك 😄\nافتح الرابط عشان نتيجتي تتسجل عندك:\n"+rl;
     $("#wa").onclick=function(){openShare(msg,rl,"نتيجتي")};
