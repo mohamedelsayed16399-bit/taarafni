@@ -218,6 +218,7 @@ function $(s){return document.querySelector(s)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var SND=(function(){try{return localStorage.getItem("tf_snd")!=="0"}catch(e){return true}})(),AC=null;
 function beep(ok){if(!SND)return;try{if(navigator.vibrate)navigator.vibrate(ok?30:[60,40,60]);AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type="sine";var t=AC.currentTime;o.frequency.setValueAtTime(ok?660:200,t);if(ok)o.frequency.setValueAtTime(880,t+.09);g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)}catch(e){}}
+var OKS=["صح! 🔥","عليك نور ✨","بتعرفه فعلاً 👏","جامد! 💪","ولا غلطة 😎"],NOS=["لأ غلط 😅","قربت بس 🤏","مش كده 😂","ركز شوية 🧐","معلش 🙈"];
 var DK=(function(){try{return localStorage.getItem("tf_dk")==="1"}catch(e){return false}})();
 function applyDk(){document.body.classList.toggle("dk",DK);var b=document.getElementById("dkb");if(b)b.textContent=DK?"☀️":"🌙"}
 function toggleDk(){DK=!DK;try{localStorage.setItem("tf_dk",DK?"1":"0")}catch(e){}applyDk()}
@@ -238,8 +239,8 @@ function parseHash(){
     var qs=[],i;for(i=0;i<m[2].length;i+=3){var q=dq(m[2].substr(i,2)),a=+m[2].substr(i+2,1);if(q>=BANK.length||a>3)return null;qs.push([q,a])}
     if(!qs.length)return null;
     var nm;try{nm=decodeURIComponent(m[1])}catch(e){return null}
-    var cu=[];if(m[3]){try{decodeURIComponent(m[3]).split("^").slice(0,3).forEach(function(seg){var pp=seg.split("|");if(pp.length===6&&+pp[5]>=0&&+pp[5]<4&&pp[0])cu.push({q:pp[0].slice(0,120),o:pp.slice(1,5).map(function(x){return x.slice(0,60)}),a:+pp[5]})})}catch(e){}}
-    return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2],cu:cu,cuRaw:m[3]||""};
+    var cu=[],wm="";if(m[3]){try{decodeURIComponent(m[3]).split("^").slice(0,4).forEach(function(seg){if(seg.charAt(0)==="!"){wm=seg.slice(1,81);return}var pp=seg.split("|");if(pp.length===6&&+pp[5]>=0&&+pp[5]<4&&pp[0])cu.push({q:pp[0].slice(0,120),o:pp.slice(1,5).map(function(x){return x.slice(0,60)}),a:+pp[5]})})}catch(e){}}
+    return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2],cu:cu,wm:wm,cuRaw:m[3]||""};
   }
   m=h.match(/^r=([^~]*)~([^~]*)~(\d+)~(\d+)(?:~([01]+))?$/);
   if(m){try{return {type:"res",quiz:m[1],who:decodeURIComponent(m[2]).slice(0,30),score:Math.min(+m[3],20),of:Math.min(+m[4],20),mask:m[5]||""}}catch(e){}}
@@ -269,7 +270,7 @@ function home(){
     h+='<div class="card"><h2>📋 اختباراتك</h2>';
     mine.slice().reverse().slice(0,5).forEach(function(q){
       var f=(d.friends||{})[q.key]||[];
-      h+='<div class="row"><span>'+esc(q.name)+' <span class="tag">'+f.length+' جاوبوا</span></span><span><button class="tag" data-lb="'+q.key+'" style="border:0">النتائج</button> <button class="tag" data-sh="'+q.key+'" style="border:0">ابعت</button></span></div>';
+      h+='<div class="row"><span>'+esc(q.name)+' <span class="tag">'+f.length+' جاوبوا</span>'+(f.some(function(x){return x.of&&x.score>=x.of})?' <span title="حد جاب الدرجة النهائية">🏆</span>':'')+(f.length>=5?' <span title="5 أصحاب أو أكتر">🌟</span>':'')+(f.length&&f.every(function(x){return x.of&&x.score/x.of<.5})?' <span title="محدش يعرفك!">🕵️</span>':'')+'</span><span><button class="tag" data-lb="'+q.key+'" style="border:0">النتائج</button> <button class="tag" data-sh="'+q.key+'" style="border:0">ابعت</button></span></div>';
     });
     h+='</div>';
   }
@@ -296,7 +297,7 @@ function build(name){
   }
   function done(){
     var code=ids.map(function(q,k){return eq(q)+ans[k]}).join("");
-    app.innerHTML='<div class="card"><h2>✍️ سؤال من تأليفك (اختياري) <span id="cn" class="tag">1</span></h2><p>اكتب سؤال خاص بيك وأربع اختيارات، وحدد إجابتك. الأصحاب هيتخانقوا عليه 😄</p><input type="text" id="cq" maxlength="120" placeholder="سؤالك"><div id="co"></div><p style="margin-bottom:0">إجابتك الصح:</p><div class="opts" id="ca" style="grid-template-columns:repeat(4,1fr)"></div><button class="btn" id="cf">كمّل</button><button class="btn alt" id="cm">أضيف سؤال تاني (لحد 3)</button><button class="btn alt" id="cs">تخطي</button></div>';
+    app.innerHTML='<div class="card"><h2>✍️ سؤال من تأليفك (اختياري) <span id="cn" class="tag">1</span></h2><p>اكتب سؤال خاص بيك وأربع اختيارات، وحدد إجابتك. الأصحاب هيتخانقوا عليه 😄</p><input type="text" id="cq" maxlength="120" placeholder="سؤالك"><div id="co"></div><p style="margin-bottom:0">إجابتك الصح:</p><div class="opts" id="ca" style="grid-template-columns:repeat(4,1fr)"></div><p style="margin:16px 0 4px;font-weight:700">💌 رسالة لأصحابك (اختياري)</p><input type="text" id="wm" maxlength="80" placeholder="مثلاً: لو جبت أقل من 5 هزعل منك 😤"><button class="btn" id="cf">كمّل</button><button class="btn alt" id="cm">أضيف سؤال تاني (لحد 3)</button><button class="btn alt" id="cs">تخطي</button></div>';
     var co=$("#co"),ca=$("#ca"),pa=-1;
     for(var z=0;z<4;z++){var inp=document.createElement("input");inp.type="text";inp.maxLength=60;inp.placeholder="اختيار "+(z+1);inp.style.marginTop="8px";inp.className="cop";co.appendChild(inp);var bb=document.createElement("button");bb.className="opt";bb.textContent=z+1;bb.style.textAlign="center";bb.dataset.k=z;ca.appendChild(bb);bb.onclick=function(){pa=+this.dataset.k;[].forEach.call(ca.children,function(x){x.classList.toggle("sel",+x.dataset.k===pa)})}}
     var cus=[];
@@ -310,7 +311,8 @@ function build(name){
     $("#cs").onclick=function(){fin2(cus.length?cus.join("^"):null)};
     $("#cm").onclick=function(){var g=grab();if(g===null||g==="empty")return;cus.push(g);if(cus.length>=3){fin2(cus.join("^"));return}clearC();toast("اتضاف سؤال ✔ ("+cus.length+"/3)")};
     $("#cf").onclick=function(){var g=grab();if(g===null)return;if(g!=="empty")cus.push(g);if(!cus.length){toast("اكتب سؤال أو دوس تخطي");return}fin2(cus.join("^"))};
-    function fin2(cu){
+    function fin2(cu){var m=($("#wm").value||"").trim().replace(/[|~#^!]/g," ").slice(0,80);fin3(m?(cu?cu+"^":"")+"!"+m:cu)}
+    function fin3(cu){
     var d=load();d.mine=d.mine||[];var k=key(name,code+(cu||""));
     if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,cu:cu,t:Date.now()});
     save(d);
@@ -336,7 +338,7 @@ function openShare(txt,link,title){
   if(navigator.share){navigator.share({title:title,text:txt,url:link}).catch(function(){})}
   else window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
 }
-function qList(q){var L=q.code?q.code.match(/.{3}/g).map(function(t){var b=BANK[dq(t.substr(0,2))];return {t:b[0],o:b[1],a:+t[2]}}):[];if(q.cu){q.cu.split("^").forEach(function(seg){var p=seg.split("|");L.push({t:p[0],o:p.slice(1,5),a:+p[5]})})}return L}
+function qList(q){var L=q.code?q.code.match(/.{3}/g).map(function(t){var b=BANK[dq(t.substr(0,2))];return {t:b[0],o:b[1],a:+t[2]}}):[];if(q.cu){q.cu.split("^").forEach(function(seg){var p=seg.split("|");if(p.length!==6)return;L.push({t:p[0],o:p.slice(1,5),a:+p[5]})})}return L}
 function board(k){
   var d=load(),q=(d.mine||[]).filter(function(x){return x.key===k})[0];if(!q)return home();
   var f=((d.friends||{})[k]||[]).slice().sort(function(a,b){return b.score-a.score}),QL=qList(q);
@@ -372,7 +374,7 @@ function play(Q){
   var L=Q.qs.map(function(q){var b=BANK[q[0]];return {t:b[0],o:b[1],a:q[1]}});
   (Q.cu||[]).forEach(function(c){L.push({t:c.q,o:c.o,a:c.a})});
   Q.qs=L;
-  app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:16px"><input type="checkbox" id="sp" style="width:20px;height:20px"> تحدي السرعة ⏱️ (10 ثواني للسؤال)</label><button class="btn" id="go">ابدأ</button></div>';
+  app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p>'+(Q.wm?'<p style="background:#fff7d6;color:#5b4300;border-radius:12px;padding:10px 12px">💌 '+esc(Q.name)+' بيقولك: «'+esc(Q.wm)+'»</p>':'')+'<input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:16px"><input type="checkbox" id="sp" style="width:20px;height:20px"> تحدي السرعة ⏱️ (10 ثواني للسؤال)</label><button class="btn" id="go">ابدأ</button></div>';
   $("#go").onclick=function(){speed=$("#sp").checked;who=$("#nm").value.trim();if(!who){toast("اكتب اسمك الأول");return}d=load();d.name=who;save(d);step()};
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   function step(){
@@ -388,6 +390,7 @@ function play(Q){
       [].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true;if(+x.dataset.k===right)x.classList.add("ok")});
       if(k!==right)b.classList.add("no");
       if(k===right){stk++;if(stk>best)best=stk}else stk=0;
+      toast(k===right?OKS[Math.floor(Math.random()*OKS.length)]:NOS[Math.floor(Math.random()*NOS.length)]);
       beep(k===right);
       setTimeout(function(){i++;step()},650);
     }});
