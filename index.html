@@ -284,9 +284,10 @@ function home(){
   var d=load(),mine=d.mine||[],h="";
   document.title="تعرفني قد إيه؟ | اختبر أصحابك";
   $("#tag").textContent="اعمل اختبارك وشوف مين فعلاً يعرفك";
-  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><p style="margin:14px 0 4px;font-weight:700">عدد الأسئلة</p><div class="opts" id="ln" style="grid-template-columns:repeat(3,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
+  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;font-size:16px"><input type="checkbox" id="dy" style="width:20px;height:20px"> 📅 اختبار النهارده (نفس الأسئلة لكل الناس)</label><p style="margin:14px 0 4px;font-weight:700">عدد الأسئلة</p><div class="opts" id="ln" style="grid-template-columns:repeat(3,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
   if(d.att&&d.att.length){
     h+='<div class="card"><h2>🎮 جاوبت على</h2>';
+    var tot=d.att.length,avgA=Math.round(d.att.reduce(function(m,a){return m+a.s/a.o},0)/tot*100);h+='<p class="small" style="margin:0 0 8px">📊 لعبت '+tot+' اختبار، متوسطك '+avgA+'%</p>';
     d.att.slice(0,5).forEach(function(a){h+='<div class="row"><span>اختبار '+esc(a.n)+'</span><span class="tag">'+a.s+'/'+a.o+'</span></div>'});
     var best=d.att.reduce(function(m,a){return Math.max(m,a.s/a.o)},0);h+='<p class="small" style="margin:8px 0 0">أعلى نسبة ليك: '+Math.round(best*100)+'%</p></div>';
   }
@@ -299,7 +300,7 @@ function home(){
     h+='</div>';
   }
   app.innerHTML=h;
-  $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);build(n)};
+  $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);DAILY=$("#dy").checked;build(n)};
   PACKS.forEach(function(p,i){var b=document.createElement("button");b.className="opt"+(i===PK?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[0];b.onclick=function(){PK=i;[].forEach.call($("#pk").children,function(x,k){x.classList.toggle("sel",k===i)})};$("#pk").appendChild(b)});
   [[5,"سريع ⚡ 5"],[10,"10 أسئلة"],[15,"طويل 🐢 15"]].forEach(function(p){var b=document.createElement("button");b.className="opt"+(p[0]===N?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[1];b.onclick=function(){N=p[0];[].forEach.call($("#ln").children,function(x){x.classList.toggle("sel",x===b)})};$("#ln").appendChild(b)});
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
@@ -307,7 +308,9 @@ function home(){
   [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code,q.cu)}});
 }
 var PK=0;
-function pick(){var P=PACKS[PK],ids=[];for(var z=P[1];z<P[2];z++)ids.push(z);for(var i=ids.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ids[i];ids[i]=ids[j];ids[j]=t}return ids.slice(0,N)}
+var DAILY=false;
+function seedRnd(){var d=new Date(),h=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();return function(){h=(h*1664525+1013904223)>>>0;return h/4294967296}}
+function pick(){var P=PACKS[PK],ids=[],rnd=DAILY?seedRnd():Math.random;if(DAILY){P=PACKS[PACKS.length-1]}for(var z=P[1];z<P[2];z++)ids.push(z);for(var i=ids.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),t=ids[i];ids[i]=ids[j];ids[j]=t}return ids.slice(0,N)}
 function build(name){
   var ids=pick(),ans=[],i=0;
   function step(){
@@ -411,7 +414,7 @@ function play(Q){
     q[1].forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
     app.innerHTML=h+'</div>'+(speed?'<div class="bar" style="margin-top:14px"><i id="tb" style="width:100%;transition:width 10s linear"></i></div>':'')+'</div>';
     if(tm){clearTimeout(tm);tm=null}
-    if(speed){var tb=$('#tb');setTimeout(function(){if(tb)tb.style.width='0%'},30);var cur=i;tm=setTimeout(function(){if(i!==cur)return;ans[i]=-1;stk=0;[].forEach.call(document.querySelectorAll('.opt'),function(x){x.disabled=true;if(+x.dataset.k===Q.qs[i].a)x.classList.add('ok')});setTimeout(function(){i++;step()},900)},10000)}
+    if(speed){var tb=$('#tb');setTimeout(function(){if(tb)tb.style.width='0%'},30);var cur=i;tm=setTimeout(function(){if(i!==cur)return;ans[i]=-1;stk=0;[].forEach.call(document.querySelectorAll('.opt'),function(x){x.disabled=true;if(!nr&&+x.dataset.k===Q.qs[i].a)x.classList.add('ok')});setTimeout(function(){i++;step()},900)},10000)}
     [].forEach.call(document.querySelectorAll(".opt"),function(b){b.onclick=function(){
       if(tm){clearTimeout(tm);tm=null}
       var k=+b.dataset.k,right=Q.qs[i].a;ans[i]=k;
