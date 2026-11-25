@@ -735,5 +735,12 @@ window.addEventListener("hashchange",route);
 route();
 if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){navigator.serviceWorker.register("sw.js").catch(function(){})}
 </script>
+<button id="bgb" type="button" aria-label="غيّر الألوان" style="position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:10px;z-index:50;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.88);font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer">🎨</button>
+<script>
+(function(){var BG=["linear-gradient(160deg,#4c1d95,#6d28d9 45%,#db2777)","linear-gradient(160deg,#064e3b,#059669 50%,#34d399)","linear-gradient(160deg,#0c4a6e,#0284c7 50%,#67e8f9)","linear-gradient(160deg,#7c2d12,#ea580c 50%,#fbbf24)","linear-gradient(160deg,#0f172a,#334155 55%,#64748b)","linear-gradient(160deg,#831843,#e11d48 50%,#fb7185)"],k="taarafni_bg",i=0;
+try{i=parseInt(localStorage.getItem(k)||"0",10)||0}catch(e){}if(i<0||i>=BG.length)i=0;
+function ap(){document.body.style.background=BG[i];var m=document.querySelector('meta[name=theme-color]');if(m)m.content=["#4c1d95","#064e3b","#0c4a6e","#7c2d12","#0f172a","#831843"][i]}
+ap();document.getElementById("bgb").onclick=function(){i=(i+1)%BG.length;try{localStorage.setItem(k,String(i))}catch(e){}ap()}})();
+</script>
 </body>
 </html>
