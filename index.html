@@ -116,10 +116,11 @@ function parseHash(){
     var cu=null;if(m[3]){try{var pp=decodeURIComponent(m[3]).split("|");if(pp.length===6&&+pp[5]>=0&&+pp[5]<4&&pp[0])cu={q:pp[0].slice(0,120),o:pp.slice(1,5).map(function(x){return x.slice(0,60)}),a:+pp[5]}}catch(e){}}
     return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2],cu:cu,cuRaw:m[3]||""};
   }
-  m=h.match(/^r=([^~]*)~([^~]*)~(\d+)~(\d+)$/);
-  if(m){try{return {type:"res",quiz:m[1],who:decodeURIComponent(m[2]).slice(0,30),score:Math.min(+m[3],20),of:Math.min(+m[4],20)}}catch(e){}}
+  m=h.match(/^r=([^~]*)~([^~]*)~(\d+)~(\d+)(?:~([01]+))?$/);
+  if(m){try{return {type:"res",quiz:m[1],who:decodeURIComponent(m[2]).slice(0,30),score:Math.min(+m[3],20),of:Math.min(+m[4],20),mask:m[5]||""}}catch(e){}}
   return null;
 }
+function confetti(){var c=document.createElement("canvas");c.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9";document.body.appendChild(c);c.width=innerWidth;c.height=innerHeight;var x=c.getContext("2d"),P=[],cl=["#fbbf24","#ec4899","#22c55e","#60a5fa","#fff"];for(var i=0;i<120;i++)P.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,w:6+Math.random()*6,c:cl[i%5],r:Math.random()*6});var f=0;(function a(){x.clearRect(0,0,c.width,c.height);P.forEach(function(p){p.y+=p.v;p.x+=Math.sin(p.y/30);p.r+=.1;x.fillStyle=p.c;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillRect(-p.w/2,-p.w/4,p.w,p.w/2);x.restore()});if(++f<220)requestAnimationFrame(a);else c.remove()})()}
 function rankOf(p){
   if(p>=1)return ["🏆","أنت أقرب واحد ليّ، يعرفني أكتر من نفسي!"];
   if(p>=.8)return ["🥇","صاحب الصاحب، يعرفني كويس جداً"];
@@ -195,14 +196,31 @@ function openShare(txt,link,title){
   if(navigator.share){navigator.share({title:title,text:txt,url:link}).catch(function(){})}
   else window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
 }
+function qList(q){var L=q.code?q.code.match(/.{3}/g).map(function(t){var b=BANK[+t.substr(0,2)];return {t:b[0],o:b[1],a:+t[2]}}):[];if(q.cu){var p=q.cu.split("|");L.push({t:p[0],o:p.slice(1,5),a:+p[5]})}return L}
 function board(k){
   var d=load(),q=(d.mine||[]).filter(function(x){return x.key===k})[0];if(!q)return home();
-  var f=((d.friends||{})[k]||[]).slice().sort(function(a,b){return b.score-a.score});
+  var f=((d.friends||{})[k]||[]).slice().sort(function(a,b){return b.score-a.score}),QL=qList(q);
   var h='<div class="card"><h2>🏅 ترتيب أصحاب '+esc(q.name)+'</h2>';
   if(!f.length)h+='<p>لسه محدش بعتلك نتيجته. لما صاحبك يخلص هيبعتلك رسالة فيها رابط، افتحه وهتتسجل هنا.</p>';
-  f.forEach(function(x,i){h+='<div class="row"><span>'+(i===0?"👑 ":(i+1)+". ")+esc(x.who)+'</span><span class="tag">'+x.score+'/'+x.of+'</span></div>'});
+  f.forEach(function(x,i){h+='<div class="row" data-fi="'+i+'" style="cursor:pointer"><span>'+(i===0?"👑 ":(i+1)+". ")+esc(x.who)+'</span><span class="tag">'+x.score+'/'+x.of+'</span></div><div class="rev hide" id="fi'+i+'"></div>'});
+  var wm=f.filter(function(x){return x.mask&&x.mask.length===QL.length});
+  if(wm.length){
+    var miss=QL.map(function(_,j){return wm.filter(function(x){return x.mask[j]==="0"}).length});
+    var worst=miss.indexOf(Math.max.apply(null,miss)),best=miss.indexOf(Math.min.apply(null,miss));
+    if(Math.max.apply(null,miss)>0)h+='<div class="rev"><b>😵 أكتر سؤال اتغلط فيه ('+miss[worst]+' من '+wm.length+')</b>'+esc(QL[worst].t)+' ← '+esc(QL[worst].o[QL[worst].a])+'</div>';
+    h+='<div class="rev"><b>🎯 أسهل سؤال ('+(wm.length-miss[best])+' من '+wm.length+' جاوبوه صح)</b>'+esc(QL[best].t)+'</div>';
+    var avg=wm.reduce(function(s,x){return s+x.score/x.of},0)/wm.length;
+    h+='<div class="rev"><b>📊 متوسط أصحابك</b>'+Math.round(avg*100)+'% يعرفوك</div>';
+  }
+  if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
   h+='<button class="btn alt" id="hm">رجوع</button></div>';
   app.innerHTML=h;$("#hm").onclick=home;
+  if($("#chal"))$("#chal").onclick=function(){shareQuiz(q.name,q.code,q.cu)};
+  [].forEach.call(document.querySelectorAll("[data-fi]"),function(r){r.onclick=function(){
+    var x=f[+r.dataset.fi],box=$("#fi"+r.dataset.fi);
+    if(!x.mask||x.mask.length!==QL.length){box.innerHTML="مفيش تفاصيل لنتيجة دي";}
+    else box.innerHTML=QL.map(function(z,j){return (x.mask[j]==="1"?"✅ ":"❌ ")+esc(z.t)}).join("<br>");
+    box.classList.toggle("hide")}});
 }
 function play(Q){
   document.title="اختبار "+Q.name+" | تعرفني قد إيه؟";
@@ -229,11 +247,12 @@ function play(Q){
   function fin(){
     var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q.a)sc++});
     var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code+(Q.cuRaw?decodeURIComponent(Q.cuRaw):""));
+    if(sc/Q.qs.length>=.8)setTimeout(confetti,200);
     var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>';
     h+='<button class="btn alt" id="img">شارك النتيجة كصورة 🖼️</button><button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
     Q.qs.forEach(function(q,k){h+='<div class="rev"><b>'+esc(q.t)+'</b>'+(ans[k]===q.a?'✅ ':'❌ ')+esc(q.o[q.a])+(ans[k]===q.a?'':' <span style="color:#9a8bbd">(إنت اخترت: '+esc(q.o[ans[k]])+')</span>')+'</div>'});
     app.innerHTML=h+'</div>';
-    var rl=base()+"#r="+qk+"~"+encodeURIComponent(who)+"~"+sc+"~"+Q.qs.length;
+    var mask=Q.qs.map(function(q,k){return ans[k]===q.a?"1":"0"}).join("");var rl=base()+"#r="+qk+"~"+encodeURIComponent(who)+"~"+sc+"~"+Q.qs.length+"~"+mask;
     var msg="جبت "+sc+" من "+Q.qs.length+" في اختبار «تعرفني قد إيه» بتاعك 😄\nافتح الرابط عشان نتيجتي تتسجل عندك:\n"+rl;
     $("#wa").onclick=function(){openShare(msg,rl,"نتيجتي")};
     $("#img").onclick=function(){cardImg(who,Q.name,sc,Q.qs.length,r,rl,msg)};
@@ -265,7 +284,7 @@ function result(R){
   }
   d.friends=d.friends||{};var l=d.friends[R.quiz]=d.friends[R.quiz]||[];
   var ex=l.filter(function(x){return x.who===R.who})[0];
-  if(ex){ex.score=R.score;ex.of=R.of}else l.push({who:R.who,score:R.score,of:R.of});
+  if(ex){ex.score=R.score;ex.of=R.of;ex.mask=R.mask}else l.push({who:R.who,score:R.score,of:R.of,mask:R.mask});
   save(d);
   history.replaceState(null,"",location.pathname);
   toast("اتسجلت نتيجة "+R.who+" ✔");
