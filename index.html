@@ -392,6 +392,7 @@ function openShare(txt,link,title){
   else window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
 }
 function qList(q){var L=q.code?q.code.match(/.{3}/g).map(function(t){var b=BANK[dq(t.substr(0,2))];return {t:b[0],o:b[1],a:+t[2]}}):[];if(q.cu){q.cu.split("^").forEach(function(seg){var p=seg.split("|");if(p.length!==6)return;L.push({t:p[0],o:p.slice(1,5),a:+p[5]})})}return L}
+function persona(f){var a=f.filter(function(x){return x.of}).reduce(function(m,x){return m+x.score/x.of},0)/Math.max(1,f.filter(function(x){return x.of}).length),v=Math.round(a*100);return [v>=85?"كتاب مفتوح 📖":v>=65?"معروف بس فيه أسرار 🕵️":v>=45?"شخصية غامضة 🌫️":"لغز محدش حلّه 🧩",v]}
 function board(k){
   var d=load(),q=(d.mine||[]).filter(function(x){return x.key===k})[0];if(!q)return home();
   var f=((d.friends||{})[k]||[]).slice().sort(function(a,b){return b.score-a.score}),QL=qList(q);
@@ -407,13 +408,15 @@ function board(k){
     var avg=wm.reduce(function(s,x){return s+x.score/x.of},0)/wm.length;
     h+='<div class="rev"><b>📊 متوسط أصحابك</b>'+Math.round(avg*100)+'% يعرفوك</div>';
   }
+  if(f.length){var ps=persona(f);h+='<div class="rev" style="text-align:center;font-size:18px"><b>🎭 شخصيتك عند أصحابك</b>'+ps[0]+' ('+ps[1]+'%)</div>'}
+  if(wm.length){var fl=[];wm.forEach(function(x){for(var j=0;j<QL.length;j++)if(x.mask[j]==="0"){fl.push(esc(x.who)+' غلط في: '+esc(QL[j].t));break}});if(fl.length)h+='<div class="rev"><b>😂 فضايح الأصحاب</b>'+fl.slice(0,4).join('<br>')+'</div>'}
   if(f.length>1)h+='<div class="rev"><b>🐢 أبعد واحد عنك</b>'+esc(f[f.length-1].who)+' ('+f[f.length-1].score+'/'+f[f.length-1].of+')</div>';
   if(f.length)h+='<div class="rev"><b>👑 أقرب واحد ليك</b>'+esc(f[0].who)+' ('+f[0].score+'/'+f[0].of+')</div><button class="btn alt" id="bimg">شارك الترتيب كصورة 🖼️</button>';
   if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
   if(f.length)h+='<button class="btn alt" id="ctx">انسخ الترتيب كنص 📋</button><button class="btn alt" id="pal">🎨 لون الصورة: '+PALS[PAL][0]+'</button>';
   h+='<button class="btn alt" id="hm">رجوع</button></div>';
   app.innerHTML=h;$("#hm").onclick=home;
-  if($("#ctx"))$("#ctx").onclick=function(){var md=["👑","🥈","🥉"];copy("🏅 مين يعرف "+q.name+" أكتر؟\n"+f.map(function(p,i){return (md[i]||(i+1)+".")+" "+p.who+" "+p.score+"/"+p.of}).join("\n")+"\n\nاعمل اختبارك: "+base())};
+  if($("#ctx"))$("#ctx").onclick=function(){var md=["👑","🥈","🥉"];copy("🏅 مين يعرف "+q.name+" أكتر؟\n🎭 "+persona(f)[0]+" ("+persona(f)[1]+"%)\n"+f.map(function(p,i){return (md[i]||(i+1)+".")+" "+p.who+" "+p.score+"/"+p.of}).join("\n")+"\n\nاعمل اختبارك: "+base())};
   if($("#pal"))$("#pal").onclick=function(){PAL=(PAL+1)%PALS.length;$("#pal").textContent="🎨 لون الصورة: "+PALS[PAL][0]};
   if($("#bimg"))$("#bimg").onclick=function(){boardImg(q.name,f)};
   if($("#chal"))$("#chal").onclick=function(){shareQuiz(q.name,q.code,q.cu)};
@@ -506,7 +509,7 @@ function boardImg(owner,f){
   var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
   var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,PALS[PAL][1]);g.addColorStop(.5,PALS[PAL][2]);g.addColorStop(1,PALS[PAL][3]);x.fillStyle=g;x.fillRect(0,0,1080,1350);
   x.direction="rtl";x.textAlign="center";x.fillStyle="#fff";x.font="bold 70px "+F;x.fillText("مين يعرف "+owner+" أكتر؟",540,170);
-  x.font="38px "+F;x.fillStyle="#f3d9ff";x.fillText("ترتيب الأصحاب",540,240);
+  x.font="38px "+F;x.fillStyle="#f3d9ff";x.fillText("ترتيب الأصحاب",540,240);if(f.length){var pz=persona(f);x.font="bold 40px "+F;x.fillStyle="#fbbf24";x.fillText("🎭 "+pz[0]+" · "+pz[1]+"%",540,295)}
   f.slice(0,6).forEach(function(p,i){var y=330+i*140;x.fillStyle=i===0?"rgba(251,191,36,.95)":"rgba(255,255,255,.16)";x.beginPath();x.moveTo(110,y);x.lineTo(970,y);x.lineTo(970,y+110);x.lineTo(110,y+110);x.closePath();x.fill();
     x.fillStyle=i===0?"#1f1535":"#fff";x.textAlign="right";x.font="bold 52px "+F;x.fillText((i===0?"👑 ":(i+1)+". ")+p.who.slice(0,16),940,y+75);x.textAlign="left";x.fillText(p.score+"/"+p.of,140,y+75);x.textAlign="center"});
   x.fillStyle="#fff";x.font="40px "+F;x.fillText("تعرفني قد إيه؟ اعمل اختبارك",540,1230);
