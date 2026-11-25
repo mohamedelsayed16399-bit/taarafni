@@ -742,5 +742,11 @@ try{i=parseInt(localStorage.getItem(k)||"0",10)||0}catch(e){}if(i<0||i>=BG.lengt
 function ap(){document.body.style.background=BG[i];var m=document.querySelector('meta[name=theme-color]');if(m)m.content=["#4c1d95","#064e3b","#0c4a6e","#7c2d12","#0f172a","#831843"][i]}
 ap();document.getElementById("bgb").onclick=function(){i=(i+1)%BG.length;try{localStorage.setItem(k,String(i))}catch(e){}ap()}})();
 </script>
+<button id="inb" type="button" style="display:none;position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:62px;z-index:50;height:42px;padding:0 14px;border-radius:21px;border:0;background:rgba(255,255,255,.92);font-size:14px;font-weight:700;color:#4c1d95;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer">📲 ثبّت التطبيق</button>
+<script>
+(function(){var ev=null,b=document.getElementById("inb");window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();ev=e;b.style.display="block"});
+b.onclick=function(){if(!ev)return;ev.prompt();try{ev.userChoice.then(function(){ev=null;b.style.display="none"})}catch(x){ev=null;b.style.display="none"}};
+window.addEventListener("appinstalled",function(){b.style.display="none"})})();
+</script>
 </body>
 </html>
