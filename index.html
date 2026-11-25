@@ -434,12 +434,14 @@ function board(k){
   }
   if(f.length){var ps=persona(f);h+='<div class="rev" style="text-align:center;font-size:18px"><b>🎭 شخصيتك عند أصحابك</b>'+ps[0]+' ('+ps[1]+'%)</div>'}
   if(wm.length){var fl=[];wm.forEach(function(x){for(var j=0;j<QL.length;j++)if(x.mask[j]==="0"){fl.push(esc(x.who)+' غلط في: '+esc(QL[j].t));break}});if(fl.length)h+='<div class="rev"><b>😂 فضايح الأصحاب</b>'+fl.slice(0,4).join('<br>')+'</div>'}
+  if(wm.length>1){h+='<div class="rev"><b>⚔️ قارن بين اتنين</b><select id="c1" style="width:100%;padding:10px;margin:6px 0;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'">'+esc(x.who)+'</option>'}).join('')+'</select><select id="c2" style="width:100%;padding:10px;margin:0 0 6px;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'"'+(i===1?' selected':'')+'>'+esc(x.who)+'</option>'}).join('')+'</select><button class="btn alt" id="cmpb" style="margin:0">قارن</button><div id="cmpr" style="margin-top:8px"></div></div>'}
   if(f.length>1)h+='<div class="rev"><b>🐢 أبعد واحد عنك</b>'+esc(f[f.length-1].who)+' ('+f[f.length-1].score+'/'+f[f.length-1].of+')</div>';
   if(f.length)h+='<div class="rev"><b>👑 أقرب واحد ليك</b>'+esc(f[0].who)+' ('+f[0].score+'/'+f[0].of+')</div><button class="btn alt" id="bimg">شارك الترتيب كصورة 🖼️</button>';
   if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
   if(f.length)h+='<button class="btn alt" id="ctx">انسخ الترتيب كنص 📋</button><button class="btn alt" id="pal">🎨 لون الصورة: '+PALS[PAL][0]+'</button>';
   h+='<button class="btn alt" id="hm">رجوع</button></div>';
   app.innerHTML=h;$("#hm").onclick=home;
+  if($("#cmpb"))$("#cmpb").onclick=function(){var A=wm[+$("#c1").value],B=wm[+$("#c2").value];if(A===B){$("#cmpr").textContent="اختار اتنين مختلفين";return}var both=0,oa=[],ob=[],none=0;QL.forEach(function(z,j){var x=A.mask[j]==="1",y=B.mask[j]==="1";if(x&&y)both++;else if(x)oa.push(z.t);else if(y)ob.push(z.t);else none++});var win=A.score===B.score?"تعادل 🤝":(A.score>B.score?A.who:B.who)+" أعرف بيك 🏆";$("#cmpr").innerHTML="<b>"+esc(A.who)+" "+A.score+" ضد "+B.score+" "+esc(B.who)+"</b><br>"+win+"<br>✅ الاتنين صح: "+both+"<br>❌ الاتنين غلط: "+none+"<br>"+esc(A.who)+" بس عرف: "+oa.length+"<br>"+esc(B.who)+" بس عرف: "+ob.length+(oa.length?"<br><small>"+esc(A.who)+" بس: "+esc(oa[0])+"</small>":"")+(ob.length?"<br><small>"+esc(B.who)+" بس: "+esc(ob[0])+"</small>":"")};
   if($("#ctx"))$("#ctx").onclick=function(){var md=["👑","🥈","🥉"];copy("🏅 مين يعرف "+q.name+" أكتر؟\n🎭 "+persona(f)[0]+" ("+persona(f)[1]+"%)\n"+f.map(function(p,i){return (md[i]||(i+1)+".")+" "+p.who+" "+p.score+"/"+p.of}).join("\n")+"\n\nاعمل اختبارك: "+base())};
   if($("#pal"))$("#pal").onclick=function(){PAL=(PAL+1)%PALS.length;$("#pal").textContent="🎨 لون الصورة: "+PALS[PAL][0]};
   if($("#bimg"))$("#bimg").onclick=function(){boardImg(q.name,f)};
