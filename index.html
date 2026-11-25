@@ -326,7 +326,7 @@ function home(){
   app.innerHTML=h;
   $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);DAILY=$("#dy").checked;build(n)};
   PACKS.forEach(function(p,i){var b=document.createElement("button");b.className="opt"+(i===PK?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[0];b.onclick=function(){PK=i;[].forEach.call($("#pk").children,function(x,k){x.classList.toggle("sel",k===i)})};$("#pk").appendChild(b)});
-  [[5,"سريع ⚡ 5"],[10,"10 أسئلة"],[15,"طويل 🐢 15"]].forEach(function(p){var b=document.createElement("button");b.className="opt"+(p[0]===N?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[1];b.onclick=function(){N=p[0];[].forEach.call($("#ln").children,function(x){x.classList.toggle("sel",x===b)})};$("#ln").appendChild(b)});
+  [[5,"سريع ⚡ 5"],[10,"10 أسئلة"],[15,"طويل 🐢 15"],[20,"ماراثون 🏃 20"]].forEach(function(p){var b=document.createElement("button");b.className="opt"+(p[0]===N?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[1];b.onclick=function(){N=p[0];[].forEach.call($("#ln").children,function(x){x.classList.toggle("sel",x===b)})};$("#ln").appendChild(b)});
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   [].forEach.call(document.querySelectorAll("[data-lb]"),function(b){b.onclick=function(){board(b.dataset.lb)}});
   [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code,q.cu)}});
@@ -439,7 +439,7 @@ function play(Q){
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   function step(){
     if(i>=Q.qs.length)return fin();
-    var q=[Q.qs[i].t,Q.qs[i].o],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+Q.qs.length+'</span><span>'+(stk>=2?'<span class="stk">🔥 '+stk+' ورا بعض</span>':esc(Q.name))+'</span></div><div class="bar"><i style="width:'+(i/Q.qs.length*100)+'%"></i></div><p style="margin:16px 0 0;color:#7b6ca3">لو سألنا '+esc(Q.name)+':</p><h2 style="margin-top:4px">«'+esc(q[0])+'»</h2><div class="opts">';
+    var q=[Q.qs[i].t,Q.qs[i].o],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+Q.qs.length+(nr||!i?'':' · ✅ '+ans.filter(function(v,z){return v===Q.qs[z].a}).length)+'</span><span>'+(stk>=2?'<span class="stk">🔥 '+stk+' ورا بعض</span>':esc(Q.name))+'</span></div><div class="bar"><i style="width:'+(i/Q.qs.length*100)+'%"></i></div><p style="margin:16px 0 0;color:#7b6ca3">لو سألنا '+esc(Q.name)+':</p><h2 style="margin-top:4px">«'+esc(q[0])+'»</h2><div class="opts">';
     q[1].forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
     app.innerHTML=h+'</div>'+(speed?'<div class="bar" style="margin-top:14px"><i id="tb" style="width:100%;transition:width 10s linear"></i></div>':'')+'</div>';
     if(tm){clearTimeout(tm);tm=null}
