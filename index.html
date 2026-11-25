@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>تعرفني قد إيه؟ | اختبر أصحابك</title>
+<meta name="description" content="اعمل اختبارك عن نفسك في 10 أسئلة، ابعته لأصحابك على واتساب، وشوف مين فيهم يعرفك بجد.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="تعرفني قد إيه؟ 🤔">
+<meta property="og:description" content="اعمل اختبارك في 10 أسئلة وابعته لأصحابك، وشوف مين فيهم يعرفك بجد.">
+<meta property="og:locale" content="ar_EG">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#6d28d9">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:linear-gradient(160deg,#4c1d95,#6d28d9 45%,#db2777);min-height:100vh;color:#1f1535;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+.card{background:#fff;border-radius:22px;padding:22px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:14px}
+h1{margin:0;color:#fff;text-align:center;font-size:28px}
+.sub{color:#fde7ff;text-align:center;margin:6px 0 0;font-size:15px}
+h2{margin:0 0 12px;font-size:20px}
+p{line-height:1.7;margin:8px 0}
+input[type=text]{width:100%;font:inherit;font-size:18px;padding:13px 14px;border:2px solid #e4dcf5;border-radius:14px;outline:none;background:#faf8ff}
+input[type=text]:focus{border-color:#7c3aed}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px}
+.btn{display:block;width:100%;padding:14px;font-size:18px;font-weight:700;background:linear-gradient(90deg,#7c3aed,#db2777);color:#fff;margin-top:14px}
+.btn:active{transform:scale(.98)}
+.btn.alt{background:#efe9fd;color:#4c1d95}
+.btn.wa{background:#16a34a}
+.btn[disabled]{opacity:.45}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{padding:14px;font-size:17px;text-align:right;background:#f5f1ff;color:#2b1a5a;border:2px solid transparent}
+.opt.sel{border-color:#7c3aed;background:#ede4ff}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.no{background:#fee2e2;border-color:#dc2626}
+.bar{height:8px;background:#e9e2fb;border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#7c3aed,#db2777);transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:14px;color:#6b5b95;margin-bottom:8px}
+.big{font-size:56px;text-align:center;font-weight:800;color:#6d28d9;margin:4px 0}
+.rank{text-align:center;font-size:22px;font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;font-size:16px}
+.row:last-child{border:0}
+.tag{background:#ede4ff;color:#4c1d95;border-radius:10px;padding:2px 10px;font-weight:700}
+.rev{padding:10px 0;border-bottom:1px solid #eee;font-size:15px}
+.rev b{display:block;margin-bottom:2px}
+.small{font-size:13px;color:#7b6ca3;text-align:center;margin-top:18px}
+.foot{color:#f3d9ff;text-align:center;font-size:13px;margin-top:22px}
+.hide{display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:20px;font-size:15px;opacity:0;transition:.3s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>تعرفني قد إيه؟ 🤔</h1>
+  <p class="sub" id="tag">اعمل اختبارك وشوف مين فعلاً يعرفك</p>
+  <div id="app"></div>
+  <div class="foot">اتعمل بحب · بيتحفظ على موبايلك ومفيش بيانات بتتبعت لأي سيرفر</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+var BANK=[
+["أكلتي المفضلة؟",["كشري","فراخ مشوية","شاورما","محشي"]],
+["أنا في الصباح؟",["محتاج قهوة وسيبوني","نشيط من الفجر","بصحى متأخر","مبصحاش أصلاً"]],
+["لو معايا إجازة أسبوع هروح؟",["الساحل","شرم أو دهب","أسوان أو الأقصر","أقعد في البيت"]],
+["أكتر حاجة بتضايقني؟",["الزحمة","الكدب","التأخير في المواعيد","الصوت العالي"]],
+["مشروبي الأساسي؟",["شاي","قهوة","عصير","بيبسي"]],
+["لو هاخرج مع أصحابي هنروح؟",["كافيه","مطعم","سينما","نتمشى"]],
+["سلاحي في الخناقة؟",["الهزار","الصمت","الصوت العالي","المنطق"]],
+["أنا بسيب الرسايل؟",["بقرا وأنسى أرد","بردّ في ثانية","بسيبها أيام","بحب أتصل بدل ما اكتب"]],
+["أهم حاجة في الصاحب؟",["يسندني وقت الشدة","يضحكني","يحافظ على سري","ميغيبش عني"]],
+["لو كسبت مليون جنيه؟",["أشتري عربية","أسافر","أبدأ مشروع","أحوّشهم"]],
+["أنا أكتر في الجروب؟",["بتكلم في كل حاجة","بقرا وساكت","باعت ميمز","مبدخلش أصلاً"]],
+["أحسن وقت في اليوم؟",["الصبح بدري","العصر","بالليل","بعد نص الليل"]],
+["مسلسلات ولا أفلام؟",["مسلسلات","أفلام","كورة بس","مفيش وقت"]],
+["أكتر حاجة بخاف منها؟",["الفشل","الوحدة","الصراصير","الظلام"]],
+["لو هتغير حاجة في نفسي؟",["أبقى أهدى","أبقى أنظم","أبقى أجرأ","مفيش، أنا تمام"]],
+["أسلوبي في الفلوس؟",["بصرف أول بأول","بحوّش","بدّي لغيري","بحسبها لآخر جنيه"]],
+["هدية أحبها؟",["حاجة عملتها بإيدك","موبايل أو جهاز","هدوم","فلوس"]],
+["الإجازة المثالية؟",["نوم","خروجة مع الشلة","سفر","شغل على مشروعي"]]
+];
+var N=10, LS="taarafni_v1";
+var app=document.getElementById("app");
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1800)}
+function load(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function save(d){try{localStorage.setItem(LS,JSON.stringify(d))}catch(e){}}
+function base(){return location.origin+location.pathname}
+function key(name,code){var s=name+"|"+code,h=5381;for(var i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36)}
+/* quiz code: N pairs "qq a" (qq=2 digits question idx, a=answer idx) */
+function mkLink(name,code){return base()+"#q="+encodeURIComponent(name)+"~"+code}
+function parseHash(){
+  var h=location.hash.replace(/^#/,"");
+  var m=h.match(/^q=([^~]*)~(\d+)$/);
+  if(m&&m[2].length%3===0){
+    var qs=[],i;for(i=0;i<m[2].length;i+=3){var q=+m[2].substr(i,2),a=+m[2].substr(i+2,1);if(q>=BANK.length||a>3)return null;qs.push([q,a])}
+    if(!qs.length)return null;
+    var nm;try{nm=decodeURIComponent(m[1])}catch(e){return null}
+    return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2]};
+  }
+  m=h.match(/^r=([^~]*)~([^~]*)~(\d+)~(\d+)$/);
+  if(m){try{return {type:"res",quiz:m[1],who:decodeURIComponent(m[2]).slice(0,30),score:Math.min(+m[3],20),of:Math.min(+m[4],20)}}catch(e){}}
+  return null;
+}
+function rankOf(p){
+  if(p>=1)return ["🏆","أنت أقرب واحد ليّ، يعرفني أكتر من نفسي!"];
+  if(p>=.8)return ["🥇","صاحب الصاحب، يعرفني كويس جداً"];
+  if(p>=.6)return ["🥈","عارفني حلو بس لسه فيه أسرار"];
+  if(p>=.4)return ["🥉","نص نص، محتاجين نقعد مع بعض أكتر"];
+  if(p>=.2)return ["😅","يا راجل؟ إحنا لسه بنتعرف"];
+  return ["🕵️","غريب تماماً! عرّف نفسك من الأول"];
+}
+function home(){
+  var d=load(),mine=d.mine||[],h="";
+  document.title="تعرفني قد إيه؟ | اختبر أصحابك";
+  $("#tag").textContent="اعمل اختبارك وشوف مين فعلاً يعرفك";
+  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><button class="btn" id="go">يلا نبدأ</button></div>';
+  if(mine.length){
+    h+='<div class="card"><h2>📋 اختباراتك</h2>';
+    mine.slice().reverse().slice(0,5).forEach(function(q){
+      var f=(d.friends||{})[q.key]||[];
+      h+='<div class="row"><span>'+esc(q.name)+' <span class="tag">'+f.length+' جاوبوا</span></span><span><button class="tag" data-lb="'+q.key+'" style="border:0">النتائج</button> <button class="tag" data-sh="'+q.key+'" style="border:0">ابعت</button></span></div>';
+    });
+    h+='</div>';
+  }
+  app.innerHTML=h;
+  $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);build(n)};
+  $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
+  [].forEach.call(document.querySelectorAll("[data-lb]"),function(b){b.onclick=function(){board(b.dataset.lb)}});
+  [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code)}});
+}
+function pick(){var ids=BANK.map(function(_,i){return i});for(var i=ids.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ids[i];ids[i]=ids[j];ids[j]=t}return ids.slice(0,N)}
+function build(name){
+  var ids=pick(),ans=[],i=0;
+  function step(){
+    if(i>=ids.length)return done();
+    var q=BANK[ids[i]],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+N+'</span><span>جاوب عن نفسك</span></div><div class="bar"><i style="width:'+(i/N*100)+'%"></i></div><h2 style="margin-top:16px">'+esc(q[0])+'</h2><div class="opts">';
+    q[1].forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+    h+='</div>'+(i?'<button class="btn alt" id="back">رجوع</button>':'')+'</div>';
+    app.innerHTML=h;
+    [].forEach.call(document.querySelectorAll(".opt"),function(b){b.onclick=function(){ans[i]=+b.dataset.k;i++;step()}});
+    if(i){$("#back").onclick=function(){i--;step()}}
+  }
+  function done(){
+    var code=ids.map(function(q,k){return (q<10?"0":"")+q+ans[k]}).join("");
+    var d=load();d.mine=d.mine||[];var k=key(name,code);
+    if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,t:Date.now()});
+    save(d);
+    var link=mkLink(name,code);
+    app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
+    $("#wa").onclick=function(){shareQuiz(name,code)};
+    $("#cp").onclick=function(){copy(link)};
+    $("#hm").onclick=function(){location.hash="";home()};
+  }
+  step();
+}
+function copy(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast("اتنسخ ✔")},function(){fb(t)})}else fb(t);
+  function fb(t){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("اتنسخ ✔")}catch(e){toast("انسخه يدوي")}a.remove()}
+}
+function shareQuiz(name,code){
+  var link=mkLink(name,code),txt="تفتكر تعرفني قد إيه؟ 🤔 جاوب 10 أسئلة عني وشوف هتجيب كام من 10:\n"+link;
+  openShare(txt,link,"تعرفني قد إيه؟");
+}
+function openShare(txt,link,title){
+  if(navigator.share){navigator.share({title:title,text:txt,url:link}).catch(function(){})}
+  else window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank");
+}
+function board(k){
+  var d=load(),q=(d.mine||[]).filter(function(x){return x.key===k})[0];if(!q)return home();
+  var f=((d.friends||{})[k]||[]).slice().sort(function(a,b){return b.score-a.score});
+  var h='<div class="card"><h2>🏅 ترتيب أصحاب '+esc(q.name)+'</h2>';
+  if(!f.length)h+='<p>لسه محدش بعتلك نتيجته. لما صاحبك يخلص هيبعتلك رسالة فيها رابط، افتحه وهتتسجل هنا.</p>';
+  f.forEach(function(x,i){h+='<div class="row"><span>'+(i===0?"👑 ":(i+1)+". ")+esc(x.who)+'</span><span class="tag">'+x.score+'/'+x.of+'</span></div>'});
+  h+='<button class="btn alt" id="hm">رجوع</button></div>';
+  app.innerHTML=h;$("#hm").onclick=home;
+}
+function play(Q){
+  document.title="اختبار "+Q.name+" | تعرفني قد إيه؟";
+  $("#tag").textContent="اختبار "+Q.name+": تعرفه قد إيه؟";
+  var d=load(),ans=[],i=0,who="";
+  app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><button class="btn" id="go">ابدأ</button></div>';
+  $("#go").onclick=function(){who=$("#nm").value.trim();if(!who){toast("اكتب اسمك الأول");return}d=load();d.name=who;save(d);step()};
+  $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
+  function step(){
+    if(i>=Q.qs.length)return fin();
+    var q=BANK[Q.qs[i][0]],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+Q.qs.length+'</span><span>'+esc(Q.name)+'</span></div><div class="bar"><i style="width:'+(i/Q.qs.length*100)+'%"></i></div><p style="margin:16px 0 0;color:#7b6ca3">لو سألنا '+esc(Q.name)+':</p><h2 style="margin-top:4px">«'+esc(q[0])+'»</h2><div class="opts">';
+    q[1].forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+    app.innerHTML=h+'</div></div>';
+    [].forEach.call(document.querySelectorAll(".opt"),function(b){b.onclick=function(){
+      var k=+b.dataset.k,right=Q.qs[i][1];ans[i]=k;
+      [].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true;if(+x.dataset.k===right)x.classList.add("ok")});
+      if(k!==right)b.classList.add("no");
+      setTimeout(function(){i++;step()},650);
+    }});
+  }
+  function fin(){
+    var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q[1])sc++});
+    var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code);
+    var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>';
+    h+='<button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
+    Q.qs.forEach(function(q,k){var b=BANK[q[0]];h+='<div class="rev"><b>'+esc(b[0])+'</b>'+(ans[k]===q[1]?'✅ ':'❌ ')+esc(b[1][q[1]])+(ans[k]===q[1]?'':' <span style="color:#9a8bbd">(إنت اخترت: '+esc(b[1][ans[k]])+')</span>')+'</div>'});
+    app.innerHTML=h+'</div>';
+    var rl=base()+"#r="+qk+"~"+encodeURIComponent(who)+"~"+sc+"~"+Q.qs.length;
+    var msg="جبت "+sc+" من "+Q.qs.length+" في اختبار «تعرفني قد إيه» بتاعك 😄\nافتح الرابط عشان نتيجتي تتسجل عندك:\n"+rl;
+    $("#wa").onclick=function(){openShare(msg,rl,"نتيجتي")};
+    $("#mine").onclick=function(){location.hash="";home()};
+    $("#rv").onclick=function(){$("#rvc").classList.toggle("hide")};
+  }
+}
+function result(R){
+  var d=load(),mine=(d.mine||[]).filter(function(x){return x.key===R.quiz})[0];
+  if(!mine){
+    app.innerHTML='<div class="card"><h2>'+esc(R.who)+' جاب '+R.score+' من '+R.of+'</h2><p>النتيجة دي لاختبار مش محفوظ على الجهاز ده. اعمل اختبارك انت وشوف أصحابك يعرفوك قد إيه.</p><button class="btn" id="mine">اعمل اختبارك</button></div>';
+    $("#mine").onclick=function(){location.hash="";home()};return;
+  }
+  d.friends=d.friends||{};var l=d.friends[R.quiz]=d.friends[R.quiz]||[];
+  var ex=l.filter(function(x){return x.who===R.who})[0];
+  if(ex){ex.score=R.score;ex.of=R.of}else l.push({who:R.who,score:R.score,of:R.of});
+  save(d);
+  history.replaceState(null,"",location.pathname);
+  toast("اتسجلت نتيجة "+R.who+" ✔");
+  board(R.quiz);
+}
+function route(){
+  var p=parseHash();
+  if(!p){home();return}
+  if(p.type==="quiz")play(p);else result(p);
+}
+window.addEventListener("hashchange",route);
+route();
+if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){navigator.serviceWorker.register("sw.js").catch(function(){})}
+</script>
+</body>
+</html>
