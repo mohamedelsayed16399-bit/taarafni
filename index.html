@@ -55,7 +55,7 @@ button{font:inherit;cursor:pointer;border:0;border-radius:14px}
 </head>
 <body>
 <div class="wrap">
-  <h1>تعرفني قد إيه؟ 🤔</h1>
+  <h1>تعرفني قد إيه؟ 🤔 <button id="snd" onclick="toggleSnd()" style="background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:12px;font-size:18px;padding:2px 8px;vertical-align:middle">🔊</button></h1>
   <p class="sub" id="tag">اعمل اختبارك وشوف مين فعلاً يعرفك</p>
   <div id="app"></div>
   <div class="foot">اتعمل بحب · بيتحفظ على موبايلك ومفيش بيانات بتتبعت لأي سيرفر</div>
@@ -123,6 +123,9 @@ var N=10, LS="taarafni_v1";
 var app=document.getElementById("app");
 function $(s){return document.querySelector(s)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var SND=(function(){try{return localStorage.getItem("tf_snd")!=="0"}catch(e){return true}})(),AC=null;
+function beep(ok){if(!SND)return;try{if(navigator.vibrate)navigator.vibrate(ok?30:[60,40,60]);AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type="sine";var t=AC.currentTime;o.frequency.setValueAtTime(ok?660:200,t);if(ok)o.frequency.setValueAtTime(880,t+.09);g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)}catch(e){}}
+function toggleSnd(){SND=!SND;try{localStorage.setItem("tf_snd",SND?"1":"0")}catch(e){}var b=document.getElementById("snd");if(b)b.textContent=SND?"🔊":"🔇";toast(SND?"الصوت شغال":"الصوت مقفول")}
 function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1800)}
 function load(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function save(d){try{localStorage.setItem(LS,JSON.stringify(d))}catch(e){}}
@@ -158,6 +161,11 @@ function home(){
   document.title="تعرفني قد إيه؟ | اختبر أصحابك";
   $("#tag").textContent="اعمل اختبارك وشوف مين فعلاً يعرفك";
   h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(3,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
+  if(d.att&&d.att.length){
+    h+='<div class="card"><h2>🎮 جاوبت على</h2>';
+    d.att.slice(0,5).forEach(function(a){h+='<div class="row"><span>اختبار '+esc(a.n)+'</span><span class="tag">'+a.s+'/'+a.o+'</span></div>'});
+    var best=d.att.reduce(function(m,a){return Math.max(m,a.s/a.o)},0);h+='<p class="small" style="margin:8px 0 0">أعلى نسبة ليك: '+Math.round(best*100)+'%</p></div>';
+  }
   if(mine.length){
     h+='<div class="card"><h2>📋 اختباراتك</h2>';
     mine.slice().reverse().slice(0,5).forEach(function(q){
@@ -202,9 +210,10 @@ function build(name){
     if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,cu:cu,t:Date.now()});
     save(d);
     var link=mkLink(name,code,cu);
-    app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
+    app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="inv">صورة دعوة للستوري 🖼️</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
     $("#wa").onclick=function(){shareQuiz(name,code,cu)};
     $("#cp").onclick=function(){copy(link)};
+    $("#inv").onclick=function(){inviteImg(name,link)};
     $("#hm").onclick=function(){location.hash="";home()};
     }
   }
@@ -250,6 +259,7 @@ function board(k){
     else box.innerHTML=QL.map(function(z,j){return (x.mask[j]==="1"?"✅ ":"❌ ")+esc(z.t)}).join("<br>");
     box.classList.toggle("hide")}});
 }
+function saveAttempt(name,sc,n){var d=load();d.att=d.att||[];d.att.unshift({n:name,s:sc,o:n,t:Date.now()});d.att=d.att.slice(0,10);save(d)}
 function play(Q){
   document.title="اختبار "+Q.name+" | تعرفني قد إيه؟";
   $("#tag").textContent="اختبار "+Q.name+": تعرفه قد إيه؟";
@@ -272,12 +282,13 @@ function play(Q){
       var k=+b.dataset.k,right=Q.qs[i].a;ans[i]=k;
       [].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true;if(+x.dataset.k===right)x.classList.add("ok")});
       if(k!==right)b.classList.add("no");
+      beep(k===right);
       setTimeout(function(){i++;step()},650);
     }});
   }
   function fin(){
     var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q.a)sc++});
-    var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code+(Q.cuRaw?decodeURIComponent(Q.cuRaw):""));
+    saveAttempt(Q.name,sc,Q.qs.length);var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code+(Q.cuRaw?decodeURIComponent(Q.cuRaw):""));
     if(sc/Q.qs.length>=.8)setTimeout(confetti,200);
     var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>';
     h+='<button class="btn alt" id="img">شارك النتيجة كصورة 🖼️</button><button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
@@ -305,6 +316,21 @@ function cardImg(who,owner,sc,n,r,rl,msg){
   c.toBlob(function(b){var f=new File([b],"natiga.png",{type:"image/png"});
     if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:msg}).catch(function(){})}
     else{var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="natiga.png";document.body.appendChild(a);a.click();a.remove();toast("اتنزلت الصورة ✔")}
+  },"image/png");
+}
+function inviteImg(name,link){
+  var c=document.createElement("canvas");c.width=1080;c.height=1920;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
+  var g=x.createLinearGradient(0,0,1080,1920);g.addColorStop(0,"#4c1d95");g.addColorStop(.55,"#6d28d9");g.addColorStop(1,"#db2777");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  x.direction="rtl";x.textAlign="center";x.fillStyle="rgba(255,255,255,.12)";x.beginPath();x.arc(540,760,330,0,Math.PI*2);x.fill();
+  x.fillStyle="#fff";x.font="bold 300px "+F;x.fillText("?",540,880);
+  x.font="bold 84px "+F;x.fillText(name+" بيتحداك!",540,360);
+  x.font="56px "+F;x.fillText("تعرفني قد إيه؟",540,1260);
+  x.font="44px "+F;x.fillStyle="#f3d9ff";x.fillText("10 أسئلة وتعرف هتجيب كام",540,1350);
+  x.fillStyle="#fbbf24";x.font="bold 52px "+F;x.fillText("اسحب لأعلى وافتح اللينك 👆",540,1560);
+  x.fillStyle="#f3d9ff";x.font="30px "+F;x.fillText("mohamedelsayed16399-bit.github.io/taarafni",540,1750);
+  c.toBlob(function(b){var fl=new File([b],"tahadi.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:"تعرفني قد إيه؟ 🤔 "+link}).catch(function(){})}
+    else{var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="tahadi.png";document.body.appendChild(a);a.click();a.remove();toast("اتنزلت الصورة ✔")}
   },"image/png");
 }
 function boardImg(owner,f){
