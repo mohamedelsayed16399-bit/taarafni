@@ -434,7 +434,7 @@ function $(s){return document.querySelector(s)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var SND=(function(){try{return localStorage.getItem("tf_snd")!=="0"}catch(e){return true}})(),AC=null;
 function beep(ok){if(!SND)return;try{if(navigator.vibrate)navigator.vibrate(ok?30:[60,40,60]);AC=AC||new (window.AudioContext||window.webkitAudioContext)();var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.type="sine";var t=AC.currentTime;o.frequency.setValueAtTime(ok?660:200,t);if(ok)o.frequency.setValueAtTime(880,t+.09);g.gain.setValueAtTime(.15,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)}catch(e){}}
-var OKS=["صح! 🔥","عليك نور ✨","بتعرفه فعلاً 👏","جامد! 💪","ولا غلطة 😎"],NOS=["لأ غلط 😅","قربت بس 🤏","مش كده 😂","ركز شوية 🧐","معلش 🙈"];
+var OKS=["صح! 🔥","عليك نور ✨","بتعرفه فعلاً 👏","جامد! 💪","ولا غلطة 😎","تمام يا كبير 👌","إيه الجمال ده 🤩","مفيش مفر، صح 😄","فاكرني كويس 🥹"],NOS=["لأ غلط 😅","قربت بس 🤏","مش كده 😂","ركز شوية 🧐","معلش 🙈","كان فاضل شعرة 😬","لأ يا صاحبي 😆","المرة الجاية 💭","حاول تاني بالله 😂"];
 var DK=(function(){try{return localStorage.getItem("tf_dk")==="1"}catch(e){return false}})();
 function applyDk(){document.body.classList.toggle("dk",DK);var b=document.getElementById("dkb");if(b)b.textContent=DK?"☀️":"🌙"}
 function toggleDk(){DK=!DK;try{localStorage.setItem("tf_dk",DK?"1":"0")}catch(e){}applyDk()}
