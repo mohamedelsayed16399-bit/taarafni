@@ -305,9 +305,33 @@ var BANK=[
 ["أحلى موعد؟",["كافيه","عشاء","مشوار","سينما"]],
 ["بحب أقول «بحبك» بـ؟",["كلام","فعل","هدية","رسالة"]],
 ["رومانسيتي؟",["عالية","متوسطة","قليلة","حسب المود"]],
-["بعد الخناقة؟",["أصالح الأول","أستنى هو","نسيب بعض يوم","نتكلم فوراً"]]
+["بعد الخناقة؟",["أصالح الأول","أستنى هو","نسيب بعض يوم","نتكلم فوراً"]],
+["أكتر تطبيق بفتحه؟",["واتساب","فيسبوك","إنستجرام","تيك توك"]],
+["بنشر ستوري؟",["كل يوم","نادراً","لما يحصل حاجة","مبنشرش"]],
+["الريأكشن المفضل؟",["❤️","😂","👍","🔥"]],
+["لو حد عمل ميوت ليا؟",["مش فارق","أزعل","أسأل ليه","أميوته هو كمان"]],
+["صور السيلفي؟",["كتير","قليل","بتصور غيري","بكره الصور"]],
+["بقعد على الموبايل؟",["أقل من ساعتين","٣ ساعات","٥ ساعات","مش بعد"]],
+["لو بوست ماجبش لايكات؟",["أمسحه","عادي","أبعته لصحابي","أنشر تاني"]],
+["الواتساب بالنسبة لي؟",["بقرا وأرد","بقرا وأنسى","رسايل صوتية","مبفتحوش كتير"]],
+["تيك توك وريلز؟",["بتفرج ساعات","شوية","بنشر","مبشوفش"]],
+["أحسن ميم؟",["مصري","أجنبي","اللي بيضحك","مبحبش ميمز"]],
+["بتابع؟",["مشاهير","أصحاب","رياضة","أخبار"]],
+["أول حاجة بعملها لما النت يقطع؟",["أصبر","أكلم الشركة","أستخدم الداتا","أنام"]],
+["حلمي الكبير؟",["مشروعي الخاص","سفر العالم","بيت","نجاح في شغلي"]],
+["أنا بعد ٥ سنين؟",["مدير","مسافر","متجوز","صاحب مشروع"]],
+["أتمنى أتعلم؟",["لغة جديدة","برمجة","الطبخ","آلة موسيقية"]],
+["الفلوس بالنسبة لي؟",["أمان","حرية","وسيلة","مش أولوية"]],
+["لو ضمنت النجاح؟",["أغير مجالي","أكمل","أسافر","أبدأ مشروع"]],
+["مكان أحب أعيش فيه؟",["إسكندرية","القاهرة","برا مصر","قرية هادية"]],
+["عربيتي الحلم؟",["مرسيدس","BMW","جيب","أي حاجة تمشي"]],
+["أكتر حاجة بخاف منها؟",["الفشل","الوحدة","المرض","الفقر"]],
+["الأهم في الشغل؟",["الفلوس","الاحترام","الراحة","التعلم"]],
+["أنا في الإجازة؟",["بنام","بسافر","بشتغل","بقعد مع صحابي"]],
+["لو اتعرضلي وظيفة برا؟",["أسافر فوراً","أفكر","أرفض","أستشير أهلي"]],
+["أفضل نصيحة سمعتها؟",["إصبر","اشتغل","اسأل","اتوكل على الله"]]
 ];
-var PACKS=[["عادي 🎲",0,30],["رومانسي 💕",30,42],["شغل ودراسة 💼",42,53],["أكل 🍔",53,65],["كورة ورياضة ⚽",65,76],["سفر ✈️",76,88],["موبايل وتكنولوجيا 📱",88,100],["ذكريات 🕰️",100,113],["حياة وأفكار 💭",113,132],["مصري أصيل 🇪🇬",132,156],["أصحاب وصحوبية 🤝",156,168],["رمضان وأفراح 🌙",168,180],["مدرسة وجامعة 🎓",180,192],["شخصيتي 🧠",192,204],["عيلة 👨‍👩‍👧",204,216],["حب وعلاقات 💘",216,228],["منوّع 🎰",0,BANK.length]];
+var PACKS=[["عادي 🎲",0,30],["رومانسي 💕",30,42],["شغل ودراسة 💼",42,53],["أكل 🍔",53,65],["كورة ورياضة ⚽",65,76],["سفر ✈️",76,88],["موبايل وتكنولوجيا 📱",88,100],["ذكريات 🕰️",100,113],["حياة وأفكار 💭",113,132],["مصري أصيل 🇪🇬",132,156],["أصحاب وصحوبية 🤝",156,168],["رمضان وأفراح 🌙",168,180],["مدرسة وجامعة 🎓",180,192],["شخصيتي 🧠",192,204],["عيلة 👨‍👩‍👧",204,216],["حب وعلاقات 💘",216,228],["سوشيال ميديا 📲",228,240],["أحلام وطموحات ✨",240,252],["منوّع 🎰",0,BANK.length]];
 var N=10, LS="taarafni_v1";
 var app=document.getElementById("app");
 function $(s){return document.querySelector(s)}
@@ -461,14 +485,14 @@ function board(k){
   }
   if(f.length){var ps=persona(f);h+='<div class="rev" style="text-align:center;font-size:18px"><b>🎭 شخصيتك عند أصحابك</b>'+ps[0]+' ('+ps[1]+'%)</div>'}
   if(wm.length){var fl=[];wm.forEach(function(x){for(var j=0;j<QL.length;j++)if(x.mask[j]==="0"){fl.push(esc(x.who)+' غلط في: '+esc(QL[j].t));break}});if(fl.length)h+='<div class="rev"><b>😂 فضايح الأصحاب</b>'+fl.slice(0,4).join('<br>')+'</div>'}
-  if(wm.length>1){h+='<div class="rev"><b>⚔️ قارن بين اتنين</b><select id="c1" style="width:100%;padding:10px;margin:6px 0;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'">'+esc(x.who)+'</option>'}).join('')+'</select><select id="c2" style="width:100%;padding:10px;margin:0 0 6px;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'"'+(i===1?' selected':'')+'>'+esc(x.who)+'</option>'}).join('')+'</select><button class="btn alt" id="cmpb" style="margin:0">قارن</button><div id="cmpr" style="margin-top:8px"></div><button class="btn alt hide" id="cmpc" style="margin:8px 0 0">انسخ المقارنة 📋</button></div>'}
+  if(wm.length>1){h+='<div class="rev"><b>⚔️ قارن بين اتنين</b><select id="c1" style="width:100%;padding:10px;margin:6px 0;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'">'+esc(x.who)+'</option>'}).join('')+'</select><select id="c2" style="width:100%;padding:10px;margin:0 0 6px;border-radius:10px">'+wm.map(function(x,i){return '<option value="'+i+'"'+(i===1?' selected':'')+'>'+esc(x.who)+'</option>'}).join('')+'</select><button class="btn alt" id="cmpb" style="margin:0">قارن</button><div id="cmpr" style="margin-top:8px"></div><button class="btn alt hide" id="cmpc" style="margin:8px 0 0">انسخ المقارنة 📋</button><button class="btn alt hide" id="cmpi" style="margin:8px 0 0">شارك المقارنة كصورة 🖼️</button></div>'}
   if(f.length>1)h+='<div class="rev"><b>🐢 أبعد واحد عنك</b>'+esc(f[f.length-1].who)+' ('+f[f.length-1].score+'/'+f[f.length-1].of+')</div>';
   if(f.length)h+='<div class="rev"><b>👑 أقرب واحد ليك</b>'+esc(f[0].who)+' ('+f[0].score+'/'+f[0].of+')</div><button class="btn alt" id="bimg">شارك الترتيب كصورة 🖼️</button>';
   if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
   if(f.length)h+='<button class="btn alt" id="ctx">انسخ الترتيب كنص 📋</button><button class="btn alt" id="pal">🎨 لون الصورة: '+PALS[PAL][0]+'</button>';
   h+='<button class="btn alt" id="hm">رجوع</button></div>';
   app.innerHTML=h;$("#hm").onclick=home;
-  if($("#cmpb"))$("#cmpb").onclick=function(){var A=wm[+$("#c1").value],B=wm[+$("#c2").value];if(A===B){$("#cmpr").textContent="اختار اتنين مختلفين";return}var both=0,oa=[],ob=[],none=0;QL.forEach(function(z,j){var x=A.mask[j]==="1",y=B.mask[j]==="1";if(x&&y)both++;else if(x)oa.push(z.t);else if(y)ob.push(z.t);else none++});var win=A.score===B.score?"تعادل 🤝":(A.score>B.score?A.who:B.who)+" أعرف بيك 🏆";$("#cmpr").innerHTML="<b>"+esc(A.who)+" "+A.score+" ضد "+B.score+" "+esc(B.who)+"</b><br>"+win+"<br>✅ الاتنين صح: "+both+"<br>❌ الاتنين غلط: "+none+"<br>"+esc(A.who)+" بس عرف: "+oa.length+"<br>"+esc(B.who)+" بس عرف: "+ob.length+(oa.length?"<br><small>"+esc(A.who)+" بس: "+esc(oa[0])+"</small>":"")+(ob.length?"<br><small>"+esc(B.who)+" بس: "+esc(ob[0])+"</small>":"");$("#cmpc").classList.remove("hide");$("#cmpc").onclick=function(){copy("⚔️ مين يعرف "+q.name+" أكتر؟\n"+A.who+" "+A.score+" ضد "+B.score+" "+B.who+"\n"+win+"\n✅ الاتنين صح: "+both+" | ❌ الاتنين غلط: "+none+"\n\nاعمل اختبارك: "+base())}};
+  if($("#cmpb"))$("#cmpb").onclick=function(){var A=wm[+$("#c1").value],B=wm[+$("#c2").value];if(A===B){$("#cmpr").textContent="اختار اتنين مختلفين";return}var both=0,oa=[],ob=[],none=0;QL.forEach(function(z,j){var x=A.mask[j]==="1",y=B.mask[j]==="1";if(x&&y)both++;else if(x)oa.push(z.t);else if(y)ob.push(z.t);else none++});var win=A.score===B.score?"تعادل 🤝":(A.score>B.score?A.who:B.who)+" أعرف بيك 🏆";$("#cmpr").innerHTML="<b>"+esc(A.who)+" "+A.score+" ضد "+B.score+" "+esc(B.who)+"</b><br>"+win+"<br>✅ الاتنين صح: "+both+"<br>❌ الاتنين غلط: "+none+"<br>"+esc(A.who)+" بس عرف: "+oa.length+"<br>"+esc(B.who)+" بس عرف: "+ob.length+(oa.length?"<br><small>"+esc(A.who)+" بس: "+esc(oa[0])+"</small>":"")+(ob.length?"<br><small>"+esc(B.who)+" بس: "+esc(ob[0])+"</small>":"");$("#cmpc").classList.remove("hide");$("#cmpi").classList.remove("hide");$("#cmpi").onclick=function(){cmpImg(q.name,A,B,win,both,none)};$("#cmpc").onclick=function(){copy("⚔️ مين يعرف "+q.name+" أكتر؟\n"+A.who+" "+A.score+" ضد "+B.score+" "+B.who+"\n"+win+"\n✅ الاتنين صح: "+both+" | ❌ الاتنين غلط: "+none+"\n\nاعمل اختبارك: "+base())}};
   if($("#ctx"))$("#ctx").onclick=function(){var md=["👑","🥈","🥉"];copy("🏅 مين يعرف "+q.name+" أكتر؟\n🎭 "+persona(f)[0]+" ("+persona(f)[1]+"%)\n"+f.map(function(p,i){return (md[i]||(i+1)+".")+" "+p.who+" "+p.score+"/"+p.of}).join("\n")+"\n\nاعمل اختبارك: "+base())};
   if($("#pal"))$("#pal").onclick=function(){PAL=(PAL+1)%PALS.length;$("#pal").textContent="🎨 لون الصورة: "+PALS[PAL][0]};
   if($("#bimg"))$("#bimg").onclick=function(){boardImg(q.name,f)};
@@ -558,6 +582,21 @@ function inviteImg(name,link){
   },"image/png");
 }
 var PALS=[["بنفسجي","#4c1d95","#6d28d9","#db2777"],["أخضر","#064e3b","#047857","#0ea5e9"],["برتقالي","#7c2d12","#ea580c","#facc15"],["ليلي","#020617","#1e293b","#6366f1"]],PAL=0;
+function cmpImg(owner,A,B,win,both,none){
+  var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
+  var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,PALS[PAL][1]);g.addColorStop(.5,PALS[PAL][2]);g.addColorStop(1,PALS[PAL][3]);x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  x.direction="rtl";x.textAlign="center";x.fillStyle="#fff";x.font="bold 64px "+F;x.fillText("مين يعرف "+owner+" أكتر؟",540,150);
+  x.font="bold 46px "+F;x.fillStyle="#fbbf24";x.fillText("⚔️ مواجهة",540,235);
+  [[A,300,"rgba(255,255,255,.18)"],[B,780,"rgba(255,255,255,.18)"]].forEach(function(p){var w=p[0].score>=(p[0]===A?B:A).score;x.fillStyle=w&&A.score!==B.score?"rgba(251,191,36,.95)":p[2];x.fillRect(p[1]-200,300,400,420);x.fillStyle=w&&A.score!==B.score?"#1f1535":"#fff";x.font="bold 56px "+F;x.fillText(p[0].who.slice(0,12),p[1],400);x.font="bold 150px "+F;x.fillText(p[0].score,p[1],580);x.font="40px "+F;x.fillText("من "+p[0].of,p[1],660)});
+  x.fillStyle="#fff";x.font="bold 54px "+F;x.fillText(win.replace(/ 🏆/,""),540,820);
+  x.font="44px "+F;x.fillText("✅ الاتنين صح: "+both+"    ❌ الاتنين غلط: "+none,540,920);
+  x.font="40px "+F;x.fillStyle="#fff";x.fillText("تعرفني قد إيه؟ اعمل اختبارك",540,1230);
+  x.font="30px "+F;x.fillStyle="#f3d9ff";x.fillText("mohamedelsayed16399-bit.github.io/taarafni",540,1290);
+  c.toBlob(function(b){var fl=new File([b],"mowajaha.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[fl]})){navigator.share({files:[fl],text:"مين يعرفني أكتر؟ 😎 "+base()}).catch(function(){})}
+    else{var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mowajaha.png";document.body.appendChild(a);a.click();a.remove();toast("اتنزلت الصورة ✔")}
+  },"image/png");
+}
 function boardImg(owner,f){
   var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
   var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,PALS[PAL][1]);g.addColorStop(.5,PALS[PAL][2]);g.addColorStop(1,PALS[PAL][3]);x.fillStyle=g;x.fillRect(0,0,1080,1350);
