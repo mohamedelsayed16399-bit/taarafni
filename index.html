@@ -748,6 +748,8 @@ ap();document.getElementById("bgb").onclick=function(){i=(i+1)%BG.length;try{loc
 <script>
 (function(){var ev=null,b=document.getElementById("inb");window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();ev=e;b.style.display="block"});
 b.onclick=function(){if(!ev)return;ev.prompt();try{ev.userChoice.then(function(){ev=null;b.style.display="none"})}catch(x){ev=null;b.style.display="none"}};
+var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream,sa=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches),dis=false;try{dis=localStorage.getItem("taarafni_ioshint")==="1"}catch(e){}
+if(ios&&!sa&&!dis){b.style.display="block";b.onclick=function(){b.style.maxWidth="calc(100vw - 80px)";b.style.height="auto";b.style.padding="8px 14px";b.style.lineHeight="1.5";b.style.textAlign="right";b.textContent="على آيفون: دوس زرار المشاركة ⬆️ وبعدين «إضافة إلى الشاشة الرئيسية» ✅";try{localStorage.setItem("taarafni_ioshint","1")}catch(e){}b.onclick=function(){b.style.display="none"}}}
 window.addEventListener("appinstalled",function(){b.style.display="none"})})();
 </script>
 </body>
