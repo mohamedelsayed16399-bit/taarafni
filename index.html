@@ -15,7 +15,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0}
+html,body{margin:0}body{padding-bottom:72px!important}
 body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:linear-gradient(160deg,#4c1d95,#6d28d9 45%,#db2777);min-height:100vh;color:#1f1535;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 .wrap{max-width:520px;margin:0 auto;padding:18px 16px 40px}
 .card{background:#fff;border-radius:22px;padding:22px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:14px}
@@ -443,8 +443,9 @@ function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");setTim
 function dkey(o){var t=new Date(Date.now()-(o||0)*864e5);return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()}
 function streakNow(){var d=load(),st=d.st||{};if(st.l===dkey(0)||st.l===dkey(1))return st.n||0;return 0}
 function streakTouch(){var d=load(),st=d.st||{n:0};if(st.l===dkey(0))return;st.n=(st.l===dkey(1)?(st.n||0):0)+1;st.l=dkey(0);st.b=Math.max(st.b||0,st.n);d.st=st;save(d)}
+function statsRow(){var d=load(),m=(d.mine||[]).length,a=d.att||[],best=0;a.forEach(function(x){if(x.o&&x.s/x.o>best)best=x.s/x.o});if(!m&&!a.length)return"";var t=[];if(m)t.push("📝 عملت "+m+" اختبار");if(a.length)t.push("🎮 جاوبت "+a.length+" مرة");if(a.length)t.push("⭐ أعلى نتيجة "+Math.round(best*100)+"%");return'<p style="margin:8px 0 0;font-size:13px;color:#6b5b95">'+t.join(" · ")+'</p>'}
 function badgeRow(){var d=load(),b=Math.max((d.st&&d.st.b)||0,(d.st&&d.st.n)||0),L=[[1,"🎯 أول اختبار"],[3,"🥉 3 أيام"],[7,"🥈 أسبوع"],[14,"🥇 أسبوعين"],[30,"👑 شهر"]],h="";L.forEach(function(x){var on=b>=x[0];h+='<span style="display:inline-block;margin:3px;padding:4px 10px;border-radius:14px;font-size:13px;background:'+(on?"#fde68a":"#e5e7eb")+';color:'+(on?"#78350f":"#9ca3af")+(on?"":";filter:grayscale(1);opacity:.7")+'">'+x[1]+'</span>'});return'<div style="margin-top:8px">'+h+'</div>'}
-function streakBadge(){var n=streakNow(),d=load(),done=d.st&&d.st.l===dkey(0);if(!n)return'<div class="card" style="text-align:center"><b>🔥 ابدأ سلسلتك النهاردة</b><p style="margin:6px 0 0">اعمل اختبار كل يوم وسلسلتك تكبر</p>'+badgeRow()+'</div>';return'<div class="card" style="text-align:center"><b style="font-size:20px">🔥 '+n+(n>2?' أيام ورا بعض':' يوم')+'</b><p style="margin:6px 0 0">'+(done?'كده عملت اختبار النهاردة ✅ ارجع بكرة عشان متكسرش السلسلة':'اعمل اختبار النهاردة عشان السلسلة متتكسرش!')+'</p>'+badgeRow()+'</div>'}
+function streakBadge(){var n=streakNow(),d=load(),done=d.st&&d.st.l===dkey(0);if(!n)return'<div class="card" style="text-align:center"><b>🔥 ابدأ سلسلتك النهاردة</b><p style="margin:6px 0 0">اعمل اختبار كل يوم وسلسلتك تكبر</p>'+badgeRow()+statsRow()+'</div>';return'<div class="card" style="text-align:center"><b style="font-size:20px">🔥 '+n+(n>2?' أيام ورا بعض':' يوم')+'</b><p style="margin:6px 0 0">'+(done?'كده عملت اختبار النهاردة ✅ ارجع بكرة عشان متكسرش السلسلة':'اعمل اختبار النهاردة عشان السلسلة متتكسرش!')+'</p>'+badgeRow()+statsRow()+'</div>'}
 function load(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
 function save(d){try{localStorage.setItem(LS,JSON.stringify(d))}catch(e){}}
 function base(){return location.origin+location.pathname}
