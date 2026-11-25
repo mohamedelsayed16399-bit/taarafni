@@ -209,9 +209,33 @@ var BANK=[
 ["الشغل من البيت؟",["أحسن حاجة","مش بنتج","حسب اليوم","مجربتوش"]],
 ["الأحلام؟",["بفتكرها","بنساها","كوابيس","مبحلمش"]],
 ["الجمعة عندي؟",["نوم وغدا","خروجة","أسرة","شغل"]],
-["العيد المفضل؟",["الفطر","الأضحى","الاتنين","شم النسيم"]]
+["العيد المفضل؟",["الفطر","الأضحى","الاتنين","شم النسيم"]],
+["أكتر حاجة بتضايقني في المواصلات؟",["الزحمة","الحر","الزيطة","السواق اللي بيسمع أغاني بصوت عالي"]],
+["لو معايا جنيه زيادة أول حاجة أشتريها؟",["شيبسي","عصير","حلاوة","حاجة مش مهمة"]],
+["الأكلة اللي بتفكرني بالبيت؟",["محشي","ملوخية","كشري","مكرونة بشاميل"]],
+["بحب أفطر؟",["فول وطعمية","بيض","جبنة ومربى","مبفطرش"]],
+["لو الكهربا قطعت أعمل إيه؟",["أنام","أطلع بره","ألعب بالموبايل","أنقذ بطارية الموبايل"]],
+["اللي بيعصبني في الجيران؟",["الدوشة","الأسئلة الكتير","الوقفة على الباب","مفيش، جيراني حلوين"]],
+["لو بشرب شاي، بشربه؟",["سكر خفيف","سكر زيادة","سادة","مبشربوش"]],
+["بحب أسمع إيه في العربية؟",["أغاني شعبية","أغاني أجنبي","راب","قرآن أو مواعظ"]],
+["وقت التليفون المفضل؟",["بالليل","الصبح بدري","بعد الضهر","طول اليوم"]],
+["أحسن حاجة في الصيف؟",["البحر","الآيس كريم","الأجازة","التكييف"]],
+["لو في زحمة أعمل إيه؟",["أسمع حاجة","أفضل ساكت","أزمر","أدور على طريق تاني"]],
+["أكلة الشارع المفضلة؟",["كبدة","فول","كشري","حواوشي"]],
+["لو رحت فرح ألبس؟",["بدلة","حاجة كاجوال","اللي لقيته","أشتري جديد"]],
+["اللي أشتريه ومش بستخدمه؟",["أدوات رياضة","كتب","حاجات المطبخ","هدوم"]],
+["أول حاجة أعملها أول ما أصحى؟",["أبص في الموبايل","أشرب مية","أعمل شاي أو قهوة","أرجع أنام"]],
+["لو عندي يوم أجازة كامل؟",["أنام","أخرج","أتفرج على مسلسل","أرتب البيت"]],
+["بقول «إن شاء الله» لما أقصد؟",["أيوه فعلاً","لأ مش هاجي","يمكن","مش عارف"]],
+["أحسن مكان في إسكندرية أو القاهرة؟",["الكورنيش","وسط البلد","مول","حتة هادية"]],
+["مشروبي في الكافيه؟",["قهوة","شاي","عصير","آيس كوفي"]],
+["لو في مفاجأة أحبها؟",["هدية","خروجة","أكل","رسالة حلوة"]],
+["عمري ما أنسى؟",["أول يوم مدرسة","موقف مضحك","فرحة نجاح","موقف محرج"]],
+["لو اتخانقت مع صاحبي؟",["أسيبه يهدى","أكلمه","أزعل شهور","أبعت ميم"]],
+["بحب أخلص شغلي؟",["بدري","في آخر لحظة","بالتدريج","محتاج حد يزقني"]],
+["رأيي في الجو الحار؟",["بكرهه","عادي","بحبه","أروح البحر"]]
 ];
-var PACKS=[["عادي 🎲",0,30],["رومانسي 💕",30,42],["شغل ودراسة 💼",42,53],["أكل 🍔",53,65],["كورة ورياضة ⚽",65,76],["سفر ✈️",76,88],["موبايل وتكنولوجيا 📱",88,100],["ذكريات 🕰️",100,113],["حياة وأفكار 💭",113,BANK.length],["منوّع 🎰",0,BANK.length]];
+var PACKS=[["عادي 🎲",0,30],["رومانسي 💕",30,42],["شغل ودراسة 💼",42,53],["أكل 🍔",53,65],["كورة ورياضة ⚽",65,76],["سفر ✈️",76,88],["موبايل وتكنولوجيا 📱",88,100],["ذكريات 🕰️",100,113],["حياة وأفكار 💭",113,132],["مصري أصيل 🇪🇬",132,BANK.length],["منوّع 🎰",0,BANK.length]];
 var N=10, LS="taarafni_v1";
 var app=document.getElementById("app");
 function $(s){return document.querySelector(s)}
@@ -230,11 +254,11 @@ function base(){return location.origin+location.pathname}
 function key(name,code){var s=name+"|"+code,h=5381;for(var i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36)}
 /* quiz code: N pairs "qq a" (qq=2 digits question idx, a=answer idx) */
 function mkLink(name,code,cu){return base()+"#q="+encodeURIComponent(name)+"~"+code+(cu?"~"+encodeURIComponent(cu):"")}
-function dq(t){return /[a-d]/.test(t[0])?100+(t.charCodeAt(0)-97)*10+ +t[1]:+t}
+function dq(t){return /[a-z]/.test(t[0])?100+(t.charCodeAt(0)-97)*10+ +t[1]:+t}
 function eq(q){return q<100?(q<10?"0":"")+q:String.fromCharCode(97+Math.floor((q-100)/10))+(q%10)}
 function parseHash(){
   var h=location.hash.replace(/^#/,"");
-  var m=h.match(/^q=([^~]*)~([0-9a-d]+)(?:~([^~]+))?$/);
+  var m=h.match(/^q=([^~]*)~([0-9a-z]+)(?:~([^~]+))?$/);
   if(m&&m[2].length%3===0){
     var qs=[],i;for(i=0;i<m[2].length;i+=3){var q=dq(m[2].substr(i,2)),a=+m[2].substr(i+2,1);if(q>=BANK.length||a>3)return null;qs.push([q,a])}
     if(!qs.length)return null;
@@ -374,12 +398,12 @@ function saveAttempt(name,sc,n){var d=load();d.att=d.att||[];d.att.unshift({n:na
 function play(Q){
   document.title="اختبار "+Q.name+" | تعرفني قد إيه؟";
   $("#tag").textContent="اختبار "+Q.name+": تعرفه قد إيه؟";
-  var d=load(),ans=[],i=0,who="",speed=false,tm=null,stk=0,best=0;
+  var d=load(),ans=[],i=0,who="",speed=false,tm=null,stk=0,best=0,nr=false;
   var L=Q.qs.map(function(q){var b=BANK[q[0]];return {t:b[0],o:b[1],a:q[1]}});
   (Q.cu||[]).forEach(function(c){L.push({t:c.q,o:c.o,a:c.a})});
   Q.qs=L;
-  app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p>'+(Q.wm?'<p style="background:#fff7d6;color:#5b4300;border-radius:12px;padding:10px 12px">💌 '+esc(Q.name)+' بيقولك: «'+esc(Q.wm)+'»</p>':'')+'<input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:16px"><input type="checkbox" id="sp" style="width:20px;height:20px"> تحدي السرعة ⏱️ (10 ثواني للسؤال)</label><button class="btn" id="go">ابدأ</button></div>';
-  $("#go").onclick=function(){speed=$("#sp").checked;who=$("#nm").value.trim();if(!who){toast("اكتب اسمك الأول");return}d=load();d.name=who;save(d);step()};
+  app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p>'+(Q.wm?'<p style="background:#fff7d6;color:#5b4300;border-radius:12px;padding:10px 12px">💌 '+esc(Q.name)+' بيقولك: «'+esc(Q.wm)+'»</p>':'')+'<input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:16px"><input type="checkbox" id="sp" style="width:20px;height:20px"> تحدي السرعة ⏱️ (10 ثواني للسؤال)</label><label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:16px"><input type="checkbox" id="nr" style="width:20px;height:20px"> وضع التشويق 🎭 (مفيش صح ولا غلط لحد النهاية)</label><button class="btn" id="go">ابدأ</button></div>';
+  $("#go").onclick=function(){speed=$("#sp").checked;nr=$("#nr").checked;who=$("#nm").value.trim();if(!who){toast("اكتب اسمك الأول");return}d=load();d.name=who;save(d);step()};
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   function step(){
     if(i>=Q.qs.length)return fin();
@@ -391,6 +415,7 @@ function play(Q){
     [].forEach.call(document.querySelectorAll(".opt"),function(b){b.onclick=function(){
       if(tm){clearTimeout(tm);tm=null}
       var k=+b.dataset.k,right=Q.qs[i].a;ans[i]=k;
+      if(nr){[].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true});b.classList.add("sel");setTimeout(function(){i++;step()},350);return}
       [].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true;if(+x.dataset.k===right)x.classList.add("ok")});
       if(k!==right)b.classList.add("no");
       if(k===right){stk++;if(stk>best)best=stk}else stk=0;
