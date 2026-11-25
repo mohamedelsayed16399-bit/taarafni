@@ -638,9 +638,10 @@ function play(Q){
   }
   function fin(){
     var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q.a)sc++});
+    var pb=-1;try{(load().att||[]).forEach(function(x){if(x.n===Q.name&&x.o===Q.qs.length&&x.s>pb)pb=x.s})}catch(e){}
     saveAttempt(Q.name,sc,Q.qs.length);var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code+(Q.cuRaw?decodeURIComponent(Q.cuRaw):""));
     if(sc/Q.qs.length>=.8)setTimeout(confetti,200);
-    var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>'+(best>=2?'<p class="small" style="margin:0"><span class="stk">🔥 أطول سلسلة صح: '+best+'</span></p>':'');
+    var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>'+(pb>=0?'<p class="small" style="margin:0" id="pbl">'+(sc>pb?'🏅 رقم قياسي جديد! (قبل كده '+pb+')':sc==pb?'🤝 زي أحسن نتيجة ليك ('+pb+')':'أحسن نتيجة ليك قبل كده: '+pb+' / '+Q.qs.length)+'</p>':'')+(best>=2?'<p class="small" style="margin:0"><span class="stk">🔥 أطول سلسلة صح: '+best+'</span></p>':'');
     h+='<button class="btn alt" id="img">شارك النتيجة كصورة 🖼️</button><button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button><button class="btn alt" id="again">جرب تاني 🔁</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
     Q.qs.forEach(function(q,k){h+='<div class="rev"><b>'+esc(q.t)+'</b>'+(ans[k]===q.a?'✅ ':'❌ ')+esc(q.o[q.a])+(ans[k]===q.a?'':' <span style="color:#9a8bbd">('+(ans[k]<0?'الوقت خلص':'إنت اخترت: '+esc(q.o[ans[k]]))+')</span>')+'</div>'});
     app.innerHTML=h+'</div>';
