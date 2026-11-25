@@ -345,8 +345,9 @@ function build(name){
     if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,cu:cu,t:Date.now()});
     save(d);
     var link=mkLink(name,code,cu);
-    app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="inv">صورة دعوة للستوري 🖼️</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
+    app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="tg">ابعت على تيليجرام ✈️</button><button class="btn alt" id="inv">صورة دعوة للستوري 🖼️</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
     $("#wa").onclick=function(){shareQuiz(name,code,cu)};
+    $("#tg").onclick=function(){window.open("https://t.me/share/url?url="+encodeURIComponent(link)+"&text="+encodeURIComponent("تفتكر تعرفني قد إيه؟ 🤔 جاوب أسئلة عني وشوف هتجيب كام"),"_blank")};
     $("#cp").onclick=function(){copy(link)};
     $("#inv").onclick=function(){inviteImg(name,link)};
     $("#hm").onclick=function(){location.hash="";home()};
@@ -382,6 +383,7 @@ function board(k){
     var avg=wm.reduce(function(s,x){return s+x.score/x.of},0)/wm.length;
     h+='<div class="rev"><b>📊 متوسط أصحابك</b>'+Math.round(avg*100)+'% يعرفوك</div>';
   }
+  if(f.length>1)h+='<div class="rev"><b>🐢 أبعد واحد عنك</b>'+esc(f[f.length-1].who)+' ('+f[f.length-1].score+'/'+f[f.length-1].of+')</div>';
   if(f.length)h+='<div class="rev"><b>👑 أقرب واحد ليك</b>'+esc(f[0].who)+' ('+f[0].score+'/'+f[0].of+')</div><button class="btn alt" id="bimg">شارك الترتيب كصورة 🖼️</button>';
   if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
   if(f.length)h+='<button class="btn alt" id="ctx">انسخ الترتيب كنص 📋</button><button class="btn alt" id="pal">🎨 لون الصورة: '+PALS[PAL][0]+'</button>';
