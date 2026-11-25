@@ -440,6 +440,7 @@ function applyDk(){document.body.classList.toggle("dk",DK);var b=document.getEle
 function toggleDk(){DK=!DK;try{localStorage.setItem("tf_dk",DK?"1":"0")}catch(e){}applyDk()}
 function toggleSnd(){SND=!SND;try{localStorage.setItem("tf_snd",SND?"1":"0")}catch(e){}var b=document.getElementById("snd");if(b)b.textContent=SND?"🔊":"🔇";toast(SND?"الصوت شغال":"الصوت مقفول")}
 function toast(t){var e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(function(){e.classList.remove("on")},1800)}
+function bgStops(){var L=[["#4c1d95","#6d28d9","#db2777"],["#064e3b","#059669","#34d399"],["#0c4a6e","#0284c7","#67e8f9"],["#7c2d12","#ea580c","#fbbf24"],["#0f172a","#334155","#64748b"],["#831843","#e11d48","#fb7185"]],i=0;try{i=parseInt(localStorage.getItem("taarafni_bg")||"0",10)||0}catch(e){}return L[i]||L[0]}
 function dkey(o){var t=new Date(Date.now()-(o||0)*864e5);return t.getFullYear()+"-"+(t.getMonth()+1)+"-"+t.getDate()}
 function streakNow(){var d=load(),st=d.st||{};if(st.l===dkey(0)||st.l===dkey(1))return st.n||0;return 0}
 function streakTouch(){var d=load(),st=d.st||{n:0};if(st.l===dkey(0))return;st.n=(st.l===dkey(1)?(st.n||0):0)+1;st.l=dkey(0);st.b=Math.max(st.b||0,st.n);d.st=st;save(d)}
@@ -655,7 +656,7 @@ function play(Q){
 }
 function cardImg(who,owner,sc,n,r,rl,msg){
   var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
-  var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,"#4c1d95");g.addColorStop(.5,"#6d28d9");g.addColorStop(1,"#db2777");x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  var g=x.createLinearGradient(0,0,1080,1350);var bq=bgStops();g.addColorStop(0,bq[0]);g.addColorStop(.5,bq[1]);g.addColorStop(1,bq[2]);x.fillStyle=g;x.fillRect(0,0,1080,1350);
   x.fillStyle="#fff";x.direction="rtl";x.textAlign="center";
   x.font="bold 64px "+F;x.fillText("تعرفني قد إيه؟",540,170);
   x.font="48px "+F;x.fillText(who+" جاب في اختبار "+owner,540,300);
@@ -671,7 +672,7 @@ function cardImg(who,owner,sc,n,r,rl,msg){
 }
 function inviteImg(name,link){
   var c=document.createElement("canvas");c.width=1080;c.height=1920;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
-  var g=x.createLinearGradient(0,0,1080,1920);g.addColorStop(0,"#4c1d95");g.addColorStop(.55,"#6d28d9");g.addColorStop(1,"#db2777");x.fillStyle=g;x.fillRect(0,0,1080,1920);
+  var g=x.createLinearGradient(0,0,1080,1920);var bq=bgStops();g.addColorStop(0,bq[0]);g.addColorStop(.55,bq[1]);g.addColorStop(1,bq[2]);x.fillStyle=g;x.fillRect(0,0,1080,1920);
   x.direction="rtl";x.textAlign="center";x.fillStyle="rgba(255,255,255,.12)";x.beginPath();x.arc(540,760,330,0,Math.PI*2);x.fill();
   x.fillStyle="#fff";x.font="bold 300px "+F;x.fillText("?",540,880);
   x.font="bold 84px "+F;x.fillText(name+" بيتحداك!",540,360);
