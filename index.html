@@ -81,7 +81,19 @@ var BANK=[
 ["لو هتغير حاجة في نفسي؟",["أبقى أهدى","أبقى أنظم","أبقى أجرأ","مفيش، أنا تمام"]],
 ["أسلوبي في الفلوس؟",["بصرف أول بأول","بحوّش","بدّي لغيري","بحسبها لآخر جنيه"]],
 ["هدية أحبها؟",["حاجة عملتها بإيدك","موبايل أو جهاز","هدوم","فلوس"]],
-["الإجازة المثالية؟",["نوم","خروجة مع الشلة","سفر","شغل على مشروعي"]]
+["الإجازة المثالية؟",["نوم","خروجة مع الشلة","سفر","شغل على مشروعي"]],
+["لو قلت لي سر هتلاقيني؟",["قبرك","بحكيه لأقرب واحد","بنسى في ثانية","بقوله بالتلميح"]],
+["أول حاجة بعملها لما أصحى؟",["أمسك الموبايل","أشرب مية","أعمل شاي أو قهوة","أرجع أنام"]],
+["أسوأ عادة عندي؟",["بأجل كل حاجة","بتأخر","بزهق بسرعة","بتكلم كتير"]],
+["أحب أكون؟",["غني ومشغول","فقير ومرتاح","مشهور","مجهول وهادي"]],
+["في الرحلات أنا اللي؟",["بيخطط كل حاجة","بيجيب الأكل","بيصور","بينام في العربية"]],
+["لو قابلت حد رخم؟",["أتجاهله","أرد عليه","أهزر معاه","أمشي"]],
+["أغنية تعبر عني؟",["شعبي","راب","كلاسيك طرب","بوب أجنبي"]],
+["النوم عندي؟",["بدري","متأخر","أي وقت","أرق مزمن"]],
+["أكتر تطبيق بفتحه؟",["واتساب","تيك توك","فيسبوك","يوتيوب"]],
+["الحب بالنسبة لي؟",["أهم حاجة","مش أولوية","لازم أمان قبله","لسه مش متأكد"]],
+["لو معايا فرصة أسافر بره؟",["أشتغل هناك","أدرس","أسافر سياحة بس","أفضل في مصر"]],
+["قرار كبير باخده؟",["بسرعة من قلبي","بعد تفكير طويل","بسأل ناس","بسيب الوقت يقرر"]]
 ];
 var N=10, LS="taarafni_v1";
 var app=document.getElementById("app");
@@ -93,15 +105,16 @@ function save(d){try{localStorage.setItem(LS,JSON.stringify(d))}catch(e){}}
 function base(){return location.origin+location.pathname}
 function key(name,code){var s=name+"|"+code,h=5381;for(var i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36)}
 /* quiz code: N pairs "qq a" (qq=2 digits question idx, a=answer idx) */
-function mkLink(name,code){return base()+"#q="+encodeURIComponent(name)+"~"+code}
+function mkLink(name,code,cu){return base()+"#q="+encodeURIComponent(name)+"~"+code+(cu?"~"+encodeURIComponent(cu):"")}
 function parseHash(){
   var h=location.hash.replace(/^#/,"");
-  var m=h.match(/^q=([^~]*)~(\d+)$/);
+  var m=h.match(/^q=([^~]*)~(\d+)(?:~([^~]+))?$/);
   if(m&&m[2].length%3===0){
     var qs=[],i;for(i=0;i<m[2].length;i+=3){var q=+m[2].substr(i,2),a=+m[2].substr(i+2,1);if(q>=BANK.length||a>3)return null;qs.push([q,a])}
     if(!qs.length)return null;
     var nm;try{nm=decodeURIComponent(m[1])}catch(e){return null}
-    return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2]};
+    var cu=null;if(m[3]){try{var pp=decodeURIComponent(m[3]).split("|");if(pp.length===6&&+pp[5]>=0&&+pp[5]<4&&pp[0])cu={q:pp[0].slice(0,120),o:pp.slice(1,5).map(function(x){return x.slice(0,60)}),a:+pp[5]}}catch(e){}}
+    return {type:"quiz",name:nm.slice(0,30),qs:qs,code:m[2],cu:cu,cuRaw:m[3]||""};
   }
   m=h.match(/^r=([^~]*)~([^~]*)~(\d+)~(\d+)$/);
   if(m){try{return {type:"res",quiz:m[1],who:decodeURIComponent(m[2]).slice(0,30),score:Math.min(+m[3],20),of:Math.min(+m[4],20)}}catch(e){}}
@@ -132,7 +145,7 @@ function home(){
   $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);build(n)};
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   [].forEach.call(document.querySelectorAll("[data-lb]"),function(b){b.onclick=function(){board(b.dataset.lb)}});
-  [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code)}});
+  [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code,q.cu)}});
 }
 function pick(){var ids=BANK.map(function(_,i){return i});for(var i=ids.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ids[i];ids[i]=ids[j];ids[j]=t}return ids.slice(0,N)}
 function build(name){
@@ -148,14 +161,25 @@ function build(name){
   }
   function done(){
     var code=ids.map(function(q,k){return (q<10?"0":"")+q+ans[k]}).join("");
-    var d=load();d.mine=d.mine||[];var k=key(name,code);
-    if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,t:Date.now()});
+    app.innerHTML='<div class="card"><h2>✍️ سؤال من تأليفك (اختياري)</h2><p>اكتب سؤال خاص بيك وأربع اختيارات، وحدد إجابتك. الأصحاب هيتخانقوا عليه 😄</p><input type="text" id="cq" maxlength="120" placeholder="سؤالك"><div id="co"></div><p style="margin-bottom:0">إجابتك الصح:</p><div class="opts" id="ca" style="grid-template-columns:repeat(4,1fr)"></div><button class="btn" id="cf">كمّل</button><button class="btn alt" id="cs">تخطي</button></div>';
+    var co=$("#co"),ca=$("#ca"),pa=-1;
+    for(var z=0;z<4;z++){var inp=document.createElement("input");inp.type="text";inp.maxLength=60;inp.placeholder="اختيار "+(z+1);inp.style.marginTop="8px";inp.className="cop";co.appendChild(inp);var bb=document.createElement("button");bb.className="opt";bb.textContent=z+1;bb.style.textAlign="center";bb.dataset.k=z;ca.appendChild(bb);bb.onclick=function(){pa=+this.dataset.k;[].forEach.call(ca.children,function(x){x.classList.toggle("sel",+x.dataset.k===pa)})}}
+    $("#cs").onclick=function(){fin2(null)};
+    $("#cf").onclick=function(){
+      var qt=$("#cq").value.trim().replace(/[|~#]/g," "),os=[].map.call(document.querySelectorAll(".cop"),function(x){return x.value.trim().replace(/[|~#]/g," ")});
+      if(!qt||os.some(function(x){return !x})||pa<0){toast("اكتب السؤال والأربع اختيارات واختار الإجابة");return}
+      fin2([qt].concat(os,[pa]).join("|"));
+    };
+    function fin2(cu){
+    var d=load();d.mine=d.mine||[];var k=key(name,code+(cu||""));
+    if(!d.mine.some(function(x){return x.key===k}))d.mine.push({key:k,name:name,code:code,cu:cu,t:Date.now()});
     save(d);
-    var link=mkLink(name,code);
+    var link=mkLink(name,code,cu);
     app.innerHTML='<div class="card"><div class="big">✅</div><h2 style="text-align:center">اختبارك جاهز يا '+esc(name)+'!</h2><p style="text-align:center">ابعته لأصحابك وشوف مين هياخد أعلى درجة.</p><button class="btn wa" id="wa">ابعت على واتساب</button><button class="btn alt" id="cp">انسخ الرابط</button><button class="btn alt" id="hm">الرئيسية</button></div>';
-    $("#wa").onclick=function(){shareQuiz(name,code)};
+    $("#wa").onclick=function(){shareQuiz(name,code,cu)};
     $("#cp").onclick=function(){copy(link)};
     $("#hm").onclick=function(){location.hash="";home()};
+    }
   }
   step();
 }
@@ -163,8 +187,8 @@ function copy(t){
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast("اتنسخ ✔")},function(){fb(t)})}else fb(t);
   function fb(t){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("اتنسخ ✔")}catch(e){toast("انسخه يدوي")}a.remove()}
 }
-function shareQuiz(name,code){
-  var link=mkLink(name,code),txt="تفتكر تعرفني قد إيه؟ 🤔 جاوب 10 أسئلة عني وشوف هتجيب كام من 10:\n"+link;
+function shareQuiz(name,code,cu){
+  var link=mkLink(name,code,cu),txt="تفتكر تعرفني قد إيه؟ 🤔 جاوب 10 أسئلة عني وشوف هتجيب كام من 10:\n"+link;
   openShare(txt,link,"تعرفني قد إيه؟");
 }
 function openShare(txt,link,title){
@@ -184,34 +208,54 @@ function play(Q){
   document.title="اختبار "+Q.name+" | تعرفني قد إيه؟";
   $("#tag").textContent="اختبار "+Q.name+": تعرفه قد إيه؟";
   var d=load(),ans=[],i=0,who="";
+  var L=Q.qs.map(function(q){var b=BANK[q[0]];return {t:b[0],o:b[1],a:q[1]}});
+  if(Q.cu)L.push({t:Q.cu.q,o:Q.cu.o,a:Q.cu.a});
+  Q.qs=L;
   app.innerHTML='<div class="card"><h2>🎮 تعرف '+esc(Q.name)+' قد إيه؟</h2><p>'+Q.qs.length+' أسئلة عن '+esc(Q.name)+'. جاوب بصراحة وشوف هتجيب كام.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><button class="btn" id="go">ابدأ</button></div>';
   $("#go").onclick=function(){who=$("#nm").value.trim();if(!who){toast("اكتب اسمك الأول");return}d=load();d.name=who;save(d);step()};
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   function step(){
     if(i>=Q.qs.length)return fin();
-    var q=BANK[Q.qs[i][0]],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+Q.qs.length+'</span><span>'+esc(Q.name)+'</span></div><div class="bar"><i style="width:'+(i/Q.qs.length*100)+'%"></i></div><p style="margin:16px 0 0;color:#7b6ca3">لو سألنا '+esc(Q.name)+':</p><h2 style="margin-top:4px">«'+esc(q[0])+'»</h2><div class="opts">';
+    var q=[Q.qs[i].t,Q.qs[i].o],h='<div class="card"><div class="meta"><span>سؤال '+(i+1)+' من '+Q.qs.length+'</span><span>'+esc(Q.name)+'</span></div><div class="bar"><i style="width:'+(i/Q.qs.length*100)+'%"></i></div><p style="margin:16px 0 0;color:#7b6ca3">لو سألنا '+esc(Q.name)+':</p><h2 style="margin-top:4px">«'+esc(q[0])+'»</h2><div class="opts">';
     q[1].forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
     app.innerHTML=h+'</div></div>';
     [].forEach.call(document.querySelectorAll(".opt"),function(b){b.onclick=function(){
-      var k=+b.dataset.k,right=Q.qs[i][1];ans[i]=k;
+      var k=+b.dataset.k,right=Q.qs[i].a;ans[i]=k;
       [].forEach.call(document.querySelectorAll(".opt"),function(x){x.disabled=true;if(+x.dataset.k===right)x.classList.add("ok")});
       if(k!==right)b.classList.add("no");
       setTimeout(function(){i++;step()},650);
     }});
   }
   function fin(){
-    var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q[1])sc++});
-    var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code);
+    var sc=0;Q.qs.forEach(function(q,k){if(ans[k]===q.a)sc++});
+    var r=rankOf(sc/Q.qs.length),qk=key(Q.name,Q.code+(Q.cuRaw?decodeURIComponent(Q.cuRaw):""));
     var h='<div class="card"><div class="rank">'+r[0]+'</div><div class="big">'+sc+' / '+Q.qs.length+'</div><p class="rank" style="font-size:18px">'+r[1]+'</p>';
-    h+='<button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
-    Q.qs.forEach(function(q,k){var b=BANK[q[0]];h+='<div class="rev"><b>'+esc(b[0])+'</b>'+(ans[k]===q[1]?'✅ ':'❌ ')+esc(b[1][q[1]])+(ans[k]===q[1]?'':' <span style="color:#9a8bbd">(إنت اخترت: '+esc(b[1][ans[k]])+')</span>')+'</div>'});
+    h+='<button class="btn alt" id="img">شارك النتيجة كصورة 🖼️</button><button class="btn wa" id="wa">ابعت نتيجتك لـ'+esc(Q.name)+'</button><button class="btn" id="mine">اعمل اختبارك انت كمان</button><button class="btn alt" id="rv">شوف الإجابات</button></div><div class="card hide" id="rvc"><h2>الإجابات الصح</h2>';
+    Q.qs.forEach(function(q,k){h+='<div class="rev"><b>'+esc(q.t)+'</b>'+(ans[k]===q.a?'✅ ':'❌ ')+esc(q.o[q.a])+(ans[k]===q.a?'':' <span style="color:#9a8bbd">(إنت اخترت: '+esc(q.o[ans[k]])+')</span>')+'</div>'});
     app.innerHTML=h+'</div>';
     var rl=base()+"#r="+qk+"~"+encodeURIComponent(who)+"~"+sc+"~"+Q.qs.length;
     var msg="جبت "+sc+" من "+Q.qs.length+" في اختبار «تعرفني قد إيه» بتاعك 😄\nافتح الرابط عشان نتيجتي تتسجل عندك:\n"+rl;
     $("#wa").onclick=function(){openShare(msg,rl,"نتيجتي")};
+    $("#img").onclick=function(){cardImg(who,Q.name,sc,Q.qs.length,r,rl,msg)};
     $("#mine").onclick=function(){location.hash="";home()};
     $("#rv").onclick=function(){$("#rvc").classList.toggle("hide")};
   }
+}
+function cardImg(who,owner,sc,n,r,rl,msg){
+  var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
+  var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,"#4c1d95");g.addColorStop(.5,"#6d28d9");g.addColorStop(1,"#db2777");x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  x.fillStyle="#fff";x.direction="rtl";x.textAlign="center";
+  x.font="bold 64px "+F;x.fillText("تعرفني قد إيه؟",540,170);
+  x.font="48px "+F;x.fillText(who+" جاب في اختبار "+owner,540,300);
+  x.fillStyle="rgba(255,255,255,.15)";x.beginPath();x.arc(540,650,260,0,Math.PI*2);x.fill();
+  x.fillStyle="#fff";x.font="bold 260px "+F;x.fillText(sc+"/"+n,540,720);
+  x.font="bold 56px "+F;var t=r[1];if(x.measureText(t).width>940){x.font="bold 44px "+F}x.fillText(t,540,1040);
+  x.font="42px "+F;x.fillText("جرب انت كمان واعمل اختبارك",540,1180);
+  x.font="32px "+F;x.fillStyle="#f3d9ff";x.fillText("mohamedelsayed16399-bit.github.io/taarafni",540,1270);
+  c.toBlob(function(b){var f=new File([b],"natiga.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:msg}).catch(function(){})}
+    else{var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="natiga.png";document.body.appendChild(a);a.click();a.remove();toast("اتنزلت الصورة ✔")}
+  },"image/png");
 }
 function result(R){
   var d=load(),mine=(d.mine||[]).filter(function(x){return x.key===R.quiz})[0];
