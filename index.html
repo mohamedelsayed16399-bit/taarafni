@@ -260,7 +260,7 @@ function home(){
   var d=load(),mine=d.mine||[],h="";
   document.title="تعرفني قد إيه؟ | اختبر أصحابك";
   $("#tag").textContent="اعمل اختبارك وشوف مين فعلاً يعرفك";
-  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
+  h+='<div class="card"><h2>🎯 اعمل اختبارك</h2><p>جاوب على 10 أسئلة عن نفسك، وابعت الرابط لأصحابك على واتساب. كل واحد هيجاوب ويطلعله تقييم، وإنت تشوف ترتيبهم.</p><input type="text" id="nm" maxlength="30" placeholder="اسمك" autocomplete="off" value="'+esc(d.name||"")+'"><p style="margin:14px 0 4px;font-weight:700">نوع الأسئلة</p><div class="opts" id="pk" style="grid-template-columns:repeat(2,1fr);margin-top:6px"></div><p style="margin:14px 0 4px;font-weight:700">عدد الأسئلة</p><div class="opts" id="ln" style="grid-template-columns:repeat(3,1fr);margin-top:6px"></div><button class="btn" id="go">يلا نبدأ</button></div>';
   if(d.att&&d.att.length){
     h+='<div class="card"><h2>🎮 جاوبت على</h2>';
     d.att.slice(0,5).forEach(function(a){h+='<div class="row"><span>اختبار '+esc(a.n)+'</span><span class="tag">'+a.s+'/'+a.o+'</span></div>'});
@@ -277,6 +277,7 @@ function home(){
   app.innerHTML=h;
   $("#go").onclick=function(){var n=$("#nm").value.trim();if(!n){toast("اكتب اسمك الأول");return}d=load();d.name=n;save(d);build(n)};
   PACKS.forEach(function(p,i){var b=document.createElement("button");b.className="opt"+(i===PK?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[0];b.onclick=function(){PK=i;[].forEach.call($("#pk").children,function(x,k){x.classList.toggle("sel",k===i)})};$("#pk").appendChild(b)});
+  [[5,"سريع ⚡ 5"],[10,"10 أسئلة"],[15,"طويل 🐢 15"]].forEach(function(p){var b=document.createElement("button");b.className="opt"+(p[0]===N?" sel":"");b.style.cssText="padding:10px 4px;font-size:14px;text-align:center";b.textContent=p[1];b.onclick=function(){N=p[0];[].forEach.call($("#ln").children,function(x){x.classList.toggle("sel",x===b)})};$("#ln").appendChild(b)});
   $("#nm").onkeydown=function(e){if(e.key==="Enter")$("#go").click()};
   [].forEach.call(document.querySelectorAll("[data-lb]"),function(b){b.onclick=function(){board(b.dataset.lb)}});
   [].forEach.call(document.querySelectorAll("[data-sh]"),function(b){b.onclick=function(){var q=(load().mine||[]).filter(function(x){return x.key===b.dataset.sh})[0];if(q)shareQuiz(q.name,q.code,q.cu)}});
@@ -331,7 +332,7 @@ function copy(t){
   function fb(t){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("اتنسخ ✔")}catch(e){toast("انسخه يدوي")}a.remove()}
 }
 function shareQuiz(name,code,cu){
-  var link=mkLink(name,code,cu),txt="تفتكر تعرفني قد إيه؟ 🤔 جاوب 10 أسئلة عني وشوف هتجيب كام من 10:\n"+link;
+  var link=mkLink(name,code,cu),txt="تفتكر تعرفني قد إيه؟ 🤔 جاوب "+(code.length/3)+(cu?" أسئلة (وفيهم من تأليفي)":" أسئلة")+" عني وشوف هتجيب كام:\n"+link;
   openShare(txt,link,"تعرفني قد إيه؟");
 }
 function openShare(txt,link,title){
@@ -356,8 +357,11 @@ function board(k){
   }
   if(f.length)h+='<div class="rev"><b>👑 أقرب واحد ليك</b>'+esc(f[0].who)+' ('+f[0].score+'/'+f[0].of+')</div><button class="btn alt" id="bimg">شارك الترتيب كصورة 🖼️</button>';
   if(f.length)h+='<button class="btn wa" id="chal">تحدّي الأصحاب تاني 🔁</button>';
+  if(f.length)h+='<button class="btn alt" id="ctx">انسخ الترتيب كنص 📋</button><button class="btn alt" id="pal">🎨 لون الصورة: '+PALS[PAL][0]+'</button>';
   h+='<button class="btn alt" id="hm">رجوع</button></div>';
   app.innerHTML=h;$("#hm").onclick=home;
+  if($("#ctx"))$("#ctx").onclick=function(){var md=["👑","🥈","🥉"];copy("🏅 مين يعرف "+q.name+" أكتر؟\n"+f.map(function(p,i){return (md[i]||(i+1)+".")+" "+p.who+" "+p.score+"/"+p.of}).join("\n")+"\n\nاعمل اختبارك: "+base())};
+  if($("#pal"))$("#pal").onclick=function(){PAL=(PAL+1)%PALS.length;$("#pal").textContent="🎨 لون الصورة: "+PALS[PAL][0]};
   if($("#bimg"))$("#bimg").onclick=function(){boardImg(q.name,f)};
   if($("#chal"))$("#chal").onclick=function(){shareQuiz(q.name,q.code,q.cu)};
   [].forEach.call(document.querySelectorAll("[data-fi]"),function(r){r.onclick=function(){
@@ -443,13 +447,14 @@ function inviteImg(name,link){
     else{var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="tahadi.png";document.body.appendChild(a);a.click();a.remove();toast("اتنزلت الصورة ✔")}
   },"image/png");
 }
+var PALS=[["بنفسجي","#4c1d95","#6d28d9","#db2777"],["أخضر","#064e3b","#047857","#0ea5e9"],["برتقالي","#7c2d12","#ea580c","#facc15"],["ليلي","#020617","#1e293b","#6366f1"]],PAL=0;
 function boardImg(owner,f){
   var c=document.createElement("canvas");c.width=1080;c.height=1350;var x=c.getContext("2d"),F="system-ui,-apple-system,'Segoe UI',Tahoma,Arial,sans-serif";
-  var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,"#4c1d95");g.addColorStop(.5,"#6d28d9");g.addColorStop(1,"#db2777");x.fillStyle=g;x.fillRect(0,0,1080,1350);
+  var g=x.createLinearGradient(0,0,1080,1350);g.addColorStop(0,PALS[PAL][1]);g.addColorStop(.5,PALS[PAL][2]);g.addColorStop(1,PALS[PAL][3]);x.fillStyle=g;x.fillRect(0,0,1080,1350);
   x.direction="rtl";x.textAlign="center";x.fillStyle="#fff";x.font="bold 70px "+F;x.fillText("مين يعرف "+owner+" أكتر؟",540,170);
   x.font="38px "+F;x.fillStyle="#f3d9ff";x.fillText("ترتيب الأصحاب",540,240);
   f.slice(0,6).forEach(function(p,i){var y=330+i*140;x.fillStyle=i===0?"rgba(251,191,36,.95)":"rgba(255,255,255,.16)";x.beginPath();x.moveTo(110,y);x.lineTo(970,y);x.lineTo(970,y+110);x.lineTo(110,y+110);x.closePath();x.fill();
-    x.fillStyle=i===0?"#4c1d95":"#fff";x.textAlign="right";x.font="bold 52px "+F;x.fillText((i===0?"👑 ":(i+1)+". ")+p.who.slice(0,16),940,y+75);x.textAlign="left";x.fillText(p.score+"/"+p.of,140,y+75);x.textAlign="center"});
+    x.fillStyle=i===0?"#1f1535":"#fff";x.textAlign="right";x.font="bold 52px "+F;x.fillText((i===0?"👑 ":(i+1)+". ")+p.who.slice(0,16),940,y+75);x.textAlign="left";x.fillText(p.score+"/"+p.of,140,y+75);x.textAlign="center"});
   x.fillStyle="#fff";x.font="40px "+F;x.fillText("تعرفني قد إيه؟ اعمل اختبارك",540,1230);
   x.font="30px "+F;x.fillStyle="#f3d9ff";x.fillText("mohamedelsayed16399-bit.github.io/taarafni",540,1290);
   c.toBlob(function(b){var fl=new File([b],"tarteeb.png",{type:"image/png"});
